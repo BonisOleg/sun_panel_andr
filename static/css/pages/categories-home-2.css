@@ -1,0 +1,294 @@
+/* Mobile / tablet — desktop-identical cloud look + card UX */
+
+@media (max-width: 768px) {
+  /* Soften hero image bottom where categories sky overlaps */
+  .hero__visual-frame {
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 62%,
+      rgb(0 0 0 / 0.45) 82%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 62%,
+      rgb(0 0 0 / 0.45) 82%,
+      transparent 100%
+    );
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .categories-section {
+    --cloud-bleed: 12rem;
+  }
+
+  /*
+   * Same sky assets/filters as desktop. On tall mobile, full-height cover
+   * washes to a pale strip — use a landscape band (desktop crop) and a long
+   * soft dissolve into a matching sky falloff (no hard seam).
+   */
+  .categories-clouds {
+    background: linear-gradient(
+      180deg,
+      #c5daf0 0%,
+      #d9e6f4 40%,
+      #eaf0f6 70%,
+      #f6f2f7 100%
+    );
+    /* Soft top dissolve over hero overlap */
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      transparent 0,
+      rgb(0 0 0 / 0.35) 3rem,
+      rgb(0 0 0 / 0.85) 7rem,
+      #000 11rem,
+      #000 72%,
+      rgb(0 0 0 / 0.45) 88%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      transparent 0,
+      rgb(0 0 0 / 0.35) 3rem,
+      rgb(0 0 0 / 0.85) 7rem,
+      #000 11rem,
+      #000 72%,
+      rgb(0 0 0 / 0.45) 88%,
+      transparent 100%
+    );
+  }
+
+  .categories-clouds__layer--back {
+    top: -2rem;
+    /* Wide + limited height → width-driven cover (desktop landscape crop) */
+    right: -70%;
+    bottom: auto;
+    left: -70%;
+    height: min(118vw, 26rem);
+    /* Deeper into cloud carpet — same fluffy look as desktop */
+    background-position: center 68%;
+    background-size: cover;
+    filter: blur(1.25px) saturate(1.2) contrast(1.1);
+    -webkit-filter: blur(1.25px) saturate(1.2) contrast(1.1);
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 50%,
+      rgb(0 0 0 / 0.75) 70%,
+      rgb(0 0 0 / 0.35) 86%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 50%,
+      rgb(0 0 0 / 0.75) 70%,
+      rgb(0 0 0 / 0.35) 86%,
+      transparent 100%
+    );
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .categories-clouds__layer--mid {
+    top: 0;
+    right: -75%;
+    bottom: auto;
+    left: -75%;
+    height: min(112vw, 24rem);
+    background-position: center 58%;
+    background-size: cover;
+    mix-blend-mode: soft-light;
+    filter: blur(3px);
+    -webkit-filter: blur(3px);
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 45%,
+      rgb(0 0 0 / 0.55) 72%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      #000 0%,
+      #000 45%,
+      rgb(0 0 0 / 0.55) 72%,
+      transparent 100%
+    );
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  .categories-section.is-visible .categories-clouds__layer--mid {
+    opacity: 0.45;
+  }
+
+  /* Same PNG treatment as desktop; raised for stacked cards */
+  .categories-clouds__layer--front-left {
+    top: auto;
+    right: auto;
+    bottom: 38%;
+    left: -12%;
+    width: min(58vw, 34rem);
+    height: min(48vw, 26rem);
+    background-position: left bottom;
+    background-size: contain;
+    filter: drop-shadow(0 12px 28px rgb(40 80 120 / 0.12));
+    -webkit-filter: drop-shadow(0 12px 28px rgb(40 80 120 / 0.12));
+  }
+
+  .categories-clouds__layer--front-right {
+    top: auto;
+    left: auto;
+    bottom: 16%;
+    right: -14%;
+    width: min(62vw, 36rem);
+    height: min(50vw, 28rem);
+    background-position: right bottom;
+    background-size: contain;
+    filter: drop-shadow(0 12px 28px rgb(40 80 120 / 0.12));
+    -webkit-filter: drop-shadow(0 12px 28px rgb(40 80 120 / 0.12));
+  }
+
+  .categories-clouds__layer--sheet {
+    top: auto;
+    bottom: -10%;
+    left: -5%;
+    right: -5%;
+    height: min(42vw, 22rem);
+    background-position: center bottom;
+    background-size: cover;
+    -webkit-mask-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      #000 28%,
+      #000 70%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      #000 28%,
+      #000 70%,
+      transparent 100%
+    );
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  /*
+   * Desktop overlay % are relative to section height. On tall mobile the
+   * heavy top wash covers the whole sky band — use length stops so the
+   * cloud band keeps the same mid-wash strength as desktop.
+   */
+  .categories-overlay {
+    background: linear-gradient(
+      180deg,
+      transparent 0,
+      rgb(246 242 247 / 0.18) 3rem,
+      rgb(255 255 255 / 0.1) 10rem,
+      rgb(255 255 255 / 0.14) 18rem,
+      rgb(245 247 250 / 0.2) 26rem,
+      rgb(246 242 247 / 0.48) 40rem,
+      rgb(246 242 247 / 0.68) 85%,
+      rgb(246 242 247 / 0.4) 94%,
+      transparent 100%
+    );
+  }
+
+  .category-card {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  .category-card:hover {
+    -webkit-transform: none;
+    transform: none;
+  }
+
+  .category-card:hover .category-img {
+    -webkit-transform: none;
+    transform: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .categories-section {
+    --cloud-bleed: 9rem;
+  }
+
+  .categories-clouds__layer--back {
+    height: min(125vw, 24rem);
+  }
+
+  .categories-clouds__layer--mid {
+    height: min(118vw, 22rem);
+  }
+
+  .categories-clouds__layer--front-left {
+    bottom: 44%;
+  }
+
+  .categories-clouds__layer--front-right {
+    bottom: 20%;
+  }
+
+  .category-image-wrap {
+    height: 11.5rem;
+    padding: 1rem;
+  }
+
+  .category-info {
+    min-height: 5rem;
+    padding: 1rem 3.25rem 1rem 1rem;
+  }
+
+  .category-arrow {
+    right: 1rem;
+    bottom: 1rem;
+  }
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .category-card {
+    background: rgb(255 255 255 / 0.96);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .categories-clouds__layer,
+  .category-card,
+  .category-img,
+  .category-arrow {
+    -webkit-transition: none;
+    transition: none;
+  }
+
+  .categories-section.is-visible .categories-clouds__layer {
+    opacity: 0.85;
+    -webkit-transform: none;
+    transform: none;
+  }
+
+  .category-card:hover {
+    -webkit-transform: none;
+    transform: none;
+  }
+
+  .category-card:hover .category-img,
+  .category-card:hover .category-arrow {
+    -webkit-transform: none;
+    transform: none;
+  }
+}

@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% load richtext_tags %}
+{% block title %}{% if is_search %}Пошук{% elif category %}{{ category.name }}{% else %}Каталог{% endif %} — {{ site_settings.site_name|default:"Soliron" }}{% endblock %}
+{% block content %}
+<div class="catalog-page">
+  <div class="container section--tight">
+    <nav class="breadcrumbs" aria-label="Навігаційний ланцюжок">
+      <a href="{% url 'core:home' %}">Головна</a>
+      <span>/</span>
+      <a href="{% url 'catalog:list' %}">Каталог</a>
+      {% if breadcrumbs %}
+        {% for crumb in breadcrumbs %}
+          <span>/</span>
+          {% if forloop.last %}
+            <span>{{ crumb.name }}</span>
+          {% else %}
+            <a href="{% url 'catalog:category' crumb.slug %}">{{ crumb.name }}</a>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    </nav>
+  </div>
+
+  <section class="catalog-section" id="catalog" aria-labelledby="catalog-page-title">
+    <div class="container">
+      <div class="catalog-header">
+        <div class="section-subtitle">АСОРТИМЕНТ</div>
+        <h1 class="section-title" id="catalog-page-title">
+          {% if is_search %}Пошук{% elif category %}{{ category.name }}{% else %}Каталог обладнання{% endif %}
+        </h1>
+        {% if q %}
+          <p class="section-description">Запит: «{{ q }}»</p>
+        {% elif category and category.description %}
+          <div class="section-description richtext">{{ category.description|richtext }}</div>
+        {% else %}
+          <p class="section-description">Фільтруйте за категорією, ціною та сортуванням.</p>
+        {% endif %}
+
+        {% if categories %}
+          <div class="filter-tabs-wrapper">
+            <div class="filter-tabs" role="group" aria-label="Фільтр категорій">
+              <a
+                class="filter-btn{% if not category and not is_search %} is-active active{% endif %}"
+                href="{% url 'catalog:list' %}"
+                hx-get="{% url 'catalog:list' %}"
+                hx-include="#catalog-filters"
+                hx-target="#catalog-grid"
+                hx-swap="innerHTML transition:true"
+                hx-push-url="true"
+                data-filter-btn
+              ><span>Усі товари</span></a>
+              {% for cat in categories %}
+                <a
+                  class="filter-btn{% if category and category.slug == cat.slug %} is-active active{% endif %}"
+                  href="{% url 'catalog:category' cat.slug %}"
+                  hx-get="{% url 'catalog:category' cat.slug %}"
+                  hx-include="#catalog-filters"
+                  hx-target="#catalog-grid"
+                  hx-swap="innerHTML transition:true"
+                  hx-push-url="true"
+                  data-filter-btn
+                ><span>{{ cat.name }}</span></a>
+              {% endfor %}
+              <div class="tab-glider" aria-hidden="true"></div>
+            </div>
+          </div>
+        {% endif %}
+
+        <form
+          id="catalog-filters"
+          class="catalog-filters"
+          method="get"
+          hx-get="{{ request.path }}"
+          hx-target="#catalog-grid"
+          hx-swap="innerHTML transition:true"
+          hx-push-url="true"
+          hx-trigger="change delay:200ms, submit"
+        >
+          <input type="hidden" name="q" value="{{ q|default:'' }}" data-filter-q>
+
+          <div class="catalog-filters__price">
+            <span class="catalog-filters__label">Ціна, ₴</span>
+            <div class="catalog-filters__range">
+              <label class="visually-hidden" for="price-min">Ціна від</label>
+              <input
+                id="price-min"
+                class="catalog-filters__input"
+                type="number"
+                name="price_min"
+                inputmode="decimal"
+                min="0"
+                step="1"
+                placeholder="Від"
+                value="{{ price_min }}"
+              >
+              <span class="catalog-filters__sep" aria-hidden="true">—</span>
+              <label class="visually-hidden" for="price-max">Ціна до</label>
+              <input
+                id="price-max"
+                class="catalog-filters__input"
+                type="number"
+                name="price_max"
+                inputmode="decimal"
+                min="0"
+                step="1"
+                placeholder="До"
+                value="{{ price_max }}"
+              >
+            </div>
+          </div>
+
+          <div class="catalog-filters__sort">
+            <span class="catalog-filters__label" id="catalog-sort-label">Сортування</span>
+            <div class="custom-dropdown" data-custom-dropdown>
+              <button
+                type="button"
+                class="custom-dropdown__trigger"
+                data-dropdown-trigger
+                id="catalog-sort-trigger"
+                aria-labelledby="catalog-sort-label catalog-sort-value"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+              >
+                <span class="custom-dropdown__label" data-dropdown-label id="catalog-sort-value">
+                  {% if sort == "price_asc" %}Ціна: зростання{% elif sort == "price_desc" %}Ціна: спадання{% elif sort == "name" %}Назва А–Я{% elif sort == "newest" %}Спочатку нові{% else %}За замовчуванням{% endif %}
+                </span>
+                <span class="custom-dropdown__chevron" aria-hidden="true"></span>
+              </button>
+              <ul class="custom-dropdown__menu" data-dropdown-menu role="listbox" hidden>
+                <li
+                  class="custom-dropdown__option{% if not sort %} is-selected{% endif %}"
+                  role="option"
+                  tabindex="-1"
+                  data-dropdown-option
+                  data-value=""
+                  data-label="За замовчуванням"
+                  aria-selected="{% if not sort %}true{% else %}false{% endif %}"
+                ><span class="custom-dropdown__check" aria-hidden="true"></span>За замовчуванням</li>
+                <li
+                  class="custom-dropdown__option{% if sort == "price_asc" %} is-selected{% endif %}"
+                  role="option"
+                  tabindex="-1"
+                  data-dropdown-option
+                  data-value="price_asc"
+                  data-label="Ціна: зростання"
+                  aria-selected="{% if sort == "price_asc" %}true{% else %}false{% endif %}"
+                ><span class="custom-dropdown__check" aria-hidden="true"></span>Ціна: зростання</li>
+                <li
+                  class="custom-dropdown__option{% if sort == "price_desc" %} is-selected{% endif %}"
+                  role="option"
+                  tabindex="-1"
+                  data-dropdown-option
+                  data-value="price_desc"
+                  data-label="Ціна: спадання"
+                  aria-selected="{% if sort == "price_desc" %}true{% else %}false{% endif %}"
+                ><span class="custom-dropdown__check" aria-hidden="true"></span>Ціна: спадання</li>
+                <li
+                  class="custom-dropdown__option{% if sort == "name" %} is-selected{% endif %}"
+                  role="option"
+                  tabindex="-1"
+                  data-dropdown-option
+                  data-value="name"
+                  data-label="Назва А–Я"
+                  aria-selected="{% if sort == "name" %}true{% else %}false{% endif %}"
+                ><span class="custom-dropdown__check" aria-hidden="true"></span>Назва А–Я</li>
+                <li
+                  class="custom-dropdown__option{% if sort == "newest" %} is-selected{% endif %}"
+                  role="option"
+                  tabindex="-1"
+                  data-dropdown-option
+                  data-value="newest"
+                  data-label="Спочатку нові"
+                  aria-selected="{% if sort == "newest" %}true{% else %}false{% endif %}"
+                ><span class="custom-dropdown__check" aria-hidden="true"></span>Спочатку нові</li>
+              </ul>
+              <select
+                id="catalog-sort"
+                class="visually-hidden sr-only"
+                name="sort"
+                data-dropdown-input
+                tabindex="-1"
+                aria-hidden="true"
+              >
+                <option value="" {% if not sort %}selected{% endif %}>За замовчуванням</option>
+                <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Ціна: зростання</option>
+                <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Ціна: спадання</option>
+                <option value="name" {% if sort == "name" %}selected{% endif %}>Назва А–Я</option>
+                <option value="newest" {% if sort == "newest" %}selected{% endif %}>Спочатку нові</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--ghost catalog-filters__apply">Застосувати</button>
+        </form>
+      </div>
+
+      <div class="catalog-grid grid grid--products" id="catalog-grid">
+        {% include "catalog/partials/product_grid.html" %}
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,75 @@
+/* Soliron design tokens */
+:root {
+  --vh: 100dvh;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* Brand palette */
+  --c-primary: #6c5685;
+  --c-secondary: #d6e4eb;
+  --c-soft: #f6f2f7;
+  --c-accent-yellow: #e6861a;
+  --c-neutral-warm: #bea987;
+  --c-btn: #e6861a;
+  --c-btn-hover: #f59a2b;
+
+  /* Semantic aliases */
+  --c-bg: var(--c-soft);
+  --c-bg-elevated: #ffffff;
+  --c-ink: #6c5685;
+  --c-muted: #6b6a66;
+  --c-line: #d6e4eb;
+  --c-accent: var(--c-accent-yellow);
+  --c-accent-hover: #c97212;
+  --c-accent-ink: #ffffff;
+  --c-brand: var(--c-primary);
+  --c-brand-soft: var(--c-secondary);
+  --c-danger: #9b2c2c;
+  --c-ok: #6c5685;
+
+  --font-display: "Sora", "Avenir Next", "Segoe UI", sans-serif;
+  --font-body: "Manrope", "Segoe UI", system-ui, sans-serif;
+
+  --fs-xs: 0.8125rem;
+  --fs-sm: 0.9375rem;
+  --fs-base: 1.0625rem;
+  --fs-md: 1.25rem;
+  --fs-lg: clamp(1.5rem, 2.4vw, 2rem);
+  --fs-xl: clamp(2rem, 4.5vw, 3.25rem);
+  --fs-hero: clamp(2.4rem, 7vw, 4.25rem);
+
+  --lh-tight: 1.15;
+  --lh-body: 1.55;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+
+  --shadow-soft: 0 10px 30px rgb(108 86 133 / 0.08);
+  --shadow-lift: 0 16px 40px rgb(108 86 133 / 0.12);
+
+  --container: 72rem;
+  --header-h: 4.25rem;
+  --tap: 2.75rem;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 300ms;
+  --dur-underline: 650ms;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --header-h: 4.75rem;
+  }
+}

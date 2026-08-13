@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ site_settings.contacts_title|default:"Контакти" }} — {{ site_settings.site_name|default:"Soliron" }}{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/pages/contacts.css' %}?v={{ static_version }}">
+{% endblock %}
+{% block content %}
+<div class="contacts-page">
+  <div class="container">
+    <header class="contacts-page__head page-head">
+      {% if site_settings.contacts_eyebrow %}
+        <span class="section__eyebrow">{{ site_settings.contacts_eyebrow }}</span>
+      {% endif %}
+      <h1>{{ site_settings.contacts_title|default:"Контакти" }}</h1>
+      {% if site_settings.contacts_lead %}
+        <p>{{ site_settings.contacts_lead }}</p>
+      {% endif %}
+    </header>
+
+    <div class="contacts-page__grid">
+      <section class="contacts-card" aria-labelledby="contacts-info-title">
+        <h2 id="contacts-info-title">{{ site_settings.contacts_info_title|default:"Реквізити" }}</h2>
+
+        <ul class="contacts-info">
+          {% if site_settings.phone_primary %}
+            <li class="contacts-info__item">
+              <span class="contacts-info__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1.1-.2 1.2.4 2.5.6 3.8.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.6.6 3.8.1.4 0 .8-.3 1.1L6.6 10.8z"/></svg>
+              </span>
+              <div>
+                <span class="contacts-info__label">Телефон</span>
+                <a href="tel:{{ site_settings.phone_primary }}">{{ site_settings.phone_primary }}</a>
+                {% if site_settings.phone_secondary %}
+                  <a class="contacts-info__secondary" href="tel:{{ site_settings.phone_secondary }}">{{ site_settings.phone_secondary }}</a>
+                {% endif %}
+              </div>
+            </li>
+          {% endif %}
+
+          {% if site_settings.email %}
+            <li class="contacts-info__item">
+              <span class="contacts-info__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+              </span>
+              <div>
+                <span class="contacts-info__label">Email</span>
+                <a href="mailto:{{ site_settings.email }}">{{ site_settings.email }}</a>
+              </div>
+            </li>
+          {% endif %}
+
+          {% if site_settings.address %}
+            <li class="contacts-info__item">
+              <span class="contacts-info__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              </span>
+              <div>
+                <span class="contacts-info__label">Адреса</span>
+                <p class="contacts-info__text">{{ site_settings.address|linebreaksbr }}</p>
+              </div>
+            </li>
+          {% endif %}
+
+          {% if site_settings.work_schedule %}
+            <li class="contacts-info__item">
+              <span class="contacts-info__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              </span>
+              <div>
+                <span class="contacts-info__label">Графік роботи</span>
+                <p class="contacts-info__text">{{ site_settings.work_schedule|linebreaksbr }}</p>
+              </div>
+            </li>
+          {% endif %}
+        </ul>
+
+        {% if site_settings.has_legal_requisites %}
+          <details class="contacts-legal">
+            <summary>Офіційні реквізити</summary>
+            <dl class="contacts-legal__list">
+              {% if site_settings.legal_company_name %}
+                <div>
+                  <dt>Назва / ФОП</dt>
+                  <dd>{{ site_settings.legal_company_name }}</dd>
+                </div>
+              {% endif %}
+              {% if site_settings.legal_edrpou %}
+                <div>
+                  <dt>ЄДРПОУ / ІПН</dt>
+                  <dd>{{ site_settings.legal_edrpou }}</dd>
+                </div>
+              {% endif %}
+              {% if site_settings.legal_iban %}
+                <div>
+                  <dt>IBAN</dt>
+                  <dd>{{ site_settings.legal_iban }}</dd>
+                </div>
+              {% endif %}
+            </dl>
+          </details>
+        {% endif %}
+
+        {% with messengers=site_settings.visible_messenger_links %}
+          {% if messengers %}
+            <div class="contacts-messengers">
+              <span class="contacts-info__label">Месенджери</span>
+              <div class="contacts-messengers__row">
+                {% for item in messengers %}
+                  <a
+                    class="contacts-messenger contacts-messenger--{{ item.key }}"
+                    href="{{ item.url }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >{{ item.label }}</a>
+                {% endfor %}
+              </div>
+            </div>
+          {% endif %}
+        {% endwith %}
+      </section>
+
+      <section class="contacts-card contacts-card--form" id="contact-form-wrap" aria-labelledby="contacts-form-title">
+        {% if success %}
+          {% include "content/partials/contact_thanks.html" %}
+        {% else %}
+          {% include "content/partials/contact_form.html" %}
+        {% endif %}
+      </section>
+    </div>
+
+    {% if site_settings.map_iframe_src %}
+      <section class="contacts-map" aria-labelledby="contacts-map-title">
+        {% if site_settings.contacts_map_title %}
+          <h2 id="contacts-map-title">{{ site_settings.contacts_map_title }}</h2>
+        {% endif %}
+        <div class="contacts-map__frame-wrap">
+          <iframe
+            class="contacts-map__frame"
+            src="{{ site_settings.map_iframe_src }}"
+            title="{{ site_settings.contacts_map_title|default:'Карта' }}"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </section>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/contacts.js' %}?v={{ static_version }}" defer></script>
+{% endblock %}

@@ -1,0 +1,58 @@
+/* Catalog + PDP */
+
+.catalog-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+.catalog-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.catalog-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid var(--c-line);
+  background: var(--c-bg-elevated);
+  text-decoration: none;
+  color: var(--c-ink);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.catalog-chip.is-active,
+.catalog-chip:hover {
+  background: var(--c-brand);
+  border-color: var(--c-brand);
+  color: var(--c-soft);
+}
+
+.map-frame {
+  width: 100%;
+  min-height: 16rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--c-brand-soft);
+}
+
+.contacts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.contacts-list a {
+  font-weight: 600;
+  text-decoration: none;
+}

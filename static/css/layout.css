@@ -1,0 +1,638 @@
+/* Site chrome: header, footer, containers, sections */
+
+.container {
+  width: min(var(--container), calc(100% - 2 * var(--space-4)));
+  max-width: 100%;
+  min-width: 0;
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: var(--space-7);
+}
+
+.section--tight {
+  padding-block: var(--space-5);
+}
+
+.section__head {
+  margin-bottom: var(--space-5);
+}
+
+.section__eyebrow {
+  display: inline-block;
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: var(--header-h);
+  padding-top: var(--safe-top);
+  background: rgb(246 242 247 / 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgb(108 86 133 / 0.08);
+  transition:
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.site-header.is-scrolled {
+  background: rgb(246 242 247 / 0.96);
+  border-bottom-color: rgb(108 86 133 / 0.12);
+  box-shadow: 0 2px 10px rgb(108 86 133 / 0.1);
+}
+
+/* Mobile menu open: sticky breaks when body scroll is locked (esp. iOS Safari).
+   backdrop-filter also makes .site-nav fixed relative to the header — keep header in viewport. */
+.site-header.is-open {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.site-header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--header-h);
+  max-width: 100%;
+  min-width: 0;
+  flex-wrap: nowrap;
+}
+
+.site-header__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  min-height: var(--tap);
+  text-decoration: none;
+  color: var(--c-brand);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.35rem, 3.5vw, 1.75rem);
+  letter-spacing: -0.03em;
+}
+
+.site-header__brand:hover {
+  color: var(--c-brand);
+}
+
+.site-header__sun {
+  flex-shrink: 0;
+  color: var(--c-btn);
+  filter: drop-shadow(0 0 6px rgb(230 134 26 / 0.55));
+}
+
+.site-header__logo {
+  display: block;
+  width: auto;
+  max-width: min(220px, 48vw);
+  height: 40px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+@media (min-width: 768px) {
+  .site-header__logo {
+    height: 48px;
+    max-width: 220px;
+  }
+}
+
+/* Higher specificity than .btn (components.css loads later) — ERR: .btn display overrides hide */
+.btn.site-header__cta,
+.site-header__cta {
+  display: none;
+}
+
+.site-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.btn-header,
+.site-header__phone {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: var(--tap);
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--c-primary);
+  color: var(--c-soft);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.btn-header__icon {
+  flex-shrink: 0;
+}
+
+.btn-header:hover,
+.site-header__phone:hover {
+  background: #514063;
+  color: var(--c-soft);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgb(108 86 133 / 0.22);
+}
+
+.btn-header:active,
+.site-header__phone:active {
+  transform: translateY(0);
+}
+
+.site-header__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap);
+  height: var(--tap);
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-sm);
+  background: var(--c-bg-elevated);
+}
+
+.site-header__toggle-bars {
+  width: 1.15rem;
+  height: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.site-header__toggle-bars span {
+  display: block;
+  height: 2px;
+  background: var(--c-ink);
+  border-radius: 2px;
+  transition: transform var(--dur) var(--ease), opacity var(--dur) var(--ease);
+}
+
+.site-header.is-open .site-header__toggle-bars span:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.site-header.is-open .site-header__toggle-bars span:nth-child(2) {
+  opacity: 0;
+}
+
+.site-header.is-open .site-header__toggle-bars span:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.site-nav {
+  --nav-panel-dur: 420ms;
+  --nav-link-dur: 380ms;
+  --nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: fixed;
+  inset: calc(var(--header-h) + var(--safe-top)) 0 auto 0;
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-4) var(--space-6);
+  background: var(--c-bg-elevated);
+  border-bottom: 1px solid var(--c-line);
+  box-shadow: var(--shadow-soft);
+  max-height: calc(var(--vh) - var(--header-h) - var(--safe-top));
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  visibility: hidden;
+  pointer-events: none;
+  /* Opaque panel so link stagger stays visible; reveal via clip + slide */
+  opacity: 1;
+  transform: translate3d(0, -1.25rem, 0);
+  clip-path: inset(0 0 100% 0);
+  transition:
+    transform var(--nav-panel-dur) var(--nav-ease),
+    clip-path var(--nav-panel-dur) var(--nav-ease),
+    visibility 0s linear var(--nav-panel-dur);
+}
+
+.site-header.is-nav-shown .site-nav {
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate3d(0, 0, 0);
+  clip-path: inset(0 0 0 0);
+  transition:
+    transform var(--nav-panel-dur) var(--nav-ease),
+    clip-path var(--nav-panel-dur) var(--nav-ease),
+    visibility 0s linear 0s;
+}
+
+.site-nav__links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.site-nav__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--c-ink);
+  font-weight: 600;
+  transition:
+    color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+/* Mobile closed: links wait off-stage; is-nav-shown staggers them in */
+.site-nav__links > .site-nav__link {
+  opacity: 0;
+  transform: translate3d(0, 0.85rem, 0);
+  transition:
+    color var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    opacity var(--nav-link-dur) var(--nav-ease),
+    transform var(--nav-link-dur) var(--nav-ease);
+  transition-delay: 0s;
+}
+
+.site-header.is-nav-shown .site-nav__links > .site-nav__link {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.site-header.is-nav-shown .site-nav__links > .site-nav__link:nth-child(1) {
+  transition-delay: 90ms;
+}
+
+.site-header.is-nav-shown .site-nav__links > .site-nav__link:nth-child(2) {
+  transition-delay: 150ms;
+}
+
+.site-header.is-nav-shown .site-nav__links > .site-nav__link:nth-child(3) {
+  transition-delay: 210ms;
+}
+
+.site-header.is-nav-shown .site-nav__links > .site-nav__link:nth-child(4) {
+  transition-delay: 270ms;
+}
+
+.site-header.is-nav-shown .site-nav__links > .site-nav__link:nth-child(5) {
+  transition-delay: 330ms;
+}
+
+.site-nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0.65rem;
+  right: 0.65rem;
+  bottom: 0.2rem;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--c-primary), var(--c-btn));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-underline) var(--ease);
+}
+
+.site-nav__link:hover {
+  background: rgb(214 228 235 / 0.55);
+  color: var(--c-primary);
+}
+
+.site-nav__link:hover::after,
+.site-nav__link.is-active::after {
+  transform: scaleX(1);
+}
+
+.site-nav__link.is-active {
+  color: var(--c-primary);
+  background: rgb(214 228 235 / 0.4);
+}
+
+.site-main {
+  min-width: 0;
+  max-width: 100%;
+  min-height: calc(var(--vh) - var(--header-h) - 10rem);
+  padding-bottom: calc(var(--space-7) + var(--safe-bottom));
+  overflow-x: hidden;
+}
+
+.site-footer {
+  background: var(--c-brand);
+  color: var(--c-soft);
+  padding: var(--space-7) 0 calc(var(--space-6) + var(--safe-bottom));
+}
+
+.site-footer a {
+  color: var(--c-soft);
+  text-decoration: none;
+  transition: color var(--dur) var(--ease);
+}
+
+.site-footer a:hover {
+  color: var(--c-neutral-warm);
+}
+
+.site-footer__list a,
+.site-footer__social a {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.15rem;
+}
+
+.site-footer__list a::after,
+.site-footer__social a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #9889aa, var(--c-accent-yellow));
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-underline) var(--ease);
+}
+
+.site-footer__list a:hover::after,
+.site-footer__social a:hover::after {
+  transform: scaleX(1);
+}
+
+.site-footer__grid {
+  display: grid;
+  /* Контакти трохи ширші — email вміщується в один рядок на вузьких екранах */
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+/* бренд і соцмережі — на всю ширину; навігація + контакти поруч */
+.site-footer__grid > :first-child,
+.site-footer__grid > :nth-child(4) {
+  grid-column: 1 / -1;
+}
+
+.site-footer__grid > :nth-child(2),
+.site-footer__grid > :nth-child(3) {
+  min-width: 0;
+}
+
+/* Адреса може переноситись; email/тел. — ні (інакше «…com.u / a») */
+.site-footer__grid > :nth-child(3) .site-footer__list > li {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.site-footer__grid > :nth-child(3) .site-footer__list a[href^="mailto:"],
+.site-footer__grid > :nth-child(3) .site-footer__list a[href^="tel:"] {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.site-footer__brand {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: var(--space-3);
+  text-decoration: none;
+  color: inherit;
+}
+
+.site-footer__logo {
+  display: block;
+  width: auto;
+  max-width: min(200px, 70vw);
+  height: 36px;
+  object-fit: contain;
+  object-position: left center;
+}
+
+@media (min-width: 768px) {
+  .site-footer__logo {
+    height: 44px;
+    max-width: 220px;
+  }
+}
+
+.site-footer__muted {
+  color: rgb(246 242 247 / 0.72);
+  max-width: 28rem;
+}
+
+.site-footer__title {
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-3);
+  color: var(--c-neutral-warm);
+}
+
+.site-footer__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.site-footer__bottom {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid rgb(246 242 247 / 0.18);
+  font-size: var(--fs-sm);
+  color: rgb(246 242 247 / 0.7);
+}
+
+.site-footer__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.site-footer__social a {
+  color: var(--c-neutral-warm);
+}
+
+.site-footer__social a:hover {
+  color: var(--c-accent-yellow);
+}
+
+@media (min-width: 768px) {
+  .site-header__inner {
+    gap: var(--space-3);
+  }
+
+  .btn-header,
+  .site-header__phone {
+    display: inline-flex;
+  }
+
+  .btn-header__label {
+    display: none;
+  }
+
+  .btn.site-header__cta,
+  .site-header__cta {
+    display: inline-flex;
+  }
+
+  .site-header__toggle {
+    display: none;
+  }
+
+  .site-nav {
+    position: static;
+    z-index: auto;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    min-width: 0;
+    margin-inline: var(--space-2);
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    max-height: none;
+    overflow: visible;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    pointer-events: auto;
+    transition: none;
+  }
+
+  .site-nav__links {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.15rem;
+  }
+
+  .site-nav__links > .site-nav__link,
+  .site-header.is-nav-shown .site-nav__links > .site-nav__link {
+    opacity: 1;
+    transform: none;
+    transition:
+      color var(--dur) var(--ease),
+      background var(--dur) var(--ease);
+    transition-delay: 0s;
+  }
+
+  .site-nav__link {
+    min-height: auto;
+    padding: 0.3rem 0.5rem;
+    font-size: var(--fs-sm);
+    white-space: nowrap;
+  }
+
+  .site-footer__grid {
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  }
+
+  .site-footer__grid > :first-child,
+  .site-footer__grid > :nth-child(4) {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-header:hover,
+  .site-header__phone:hover {
+    transform: none;
+  }
+
+  .site-nav,
+  .site-header.is-nav-shown .site-nav,
+  .site-nav__links > .site-nav__link,
+  .site-header.is-nav-shown .site-nav__links > .site-nav__link {
+    transition: none;
+    transform: none;
+    clip-path: none;
+  }
+
+  .site-header.is-open .site-nav,
+  .site-header.is-nav-shown .site-nav {
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .site-header.is-open .site-nav__links > .site-nav__link,
+  .site-header.is-nav-shown .site-nav__links > .site-nav__link {
+    opacity: 1;
+  }
+
+  .site-nav__link::after,
+  .site-footer__list a::after,
+  .site-footer__social a::after {
+    transition: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .btn-header__label {
+    display: inline;
+  }
+
+  .site-nav {
+    gap: var(--space-4);
+  }
+
+  .site-nav__links {
+    gap: var(--space-2);
+  }
+
+  .site-nav__link {
+    padding: 0.35rem 0.65rem;
+    font-size: inherit;
+  }
+
+  .site-nav__search {
+    flex-basis: 14rem;
+    width: 14rem;
+    min-width: 8.5rem;
+    max-width: 14rem;
+  }
+}
+
+/* iOS Safari: avoid 100vh jump */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Companion to nav.js scroll lock — reduce rubber-band under open menu */
+html.is-nav-locked,
+html.is-nav-locked body {
+  overscroll-behavior: none;
+}

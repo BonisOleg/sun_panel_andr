@@ -1,0 +1,6 @@
+/*
+ * Load order reference only — templates/base.html links each file with
+ * ?v={{ static_version }} so edits are never stuck behind @import cache.
+ *
+ * tokens → reset → layout → components → component partials → pages
+ */

@@ -1,0 +1,14 @@
+.venv
+__pycache__
+*.pyc
+.git
+.env
+db.sqlite3
+media
+staticfiles
+.DS_Store
+*.pdf
+*.docx
+_scaffold_gen.py
+deploy/data/*.json
+deploy/data/*.tar.gz

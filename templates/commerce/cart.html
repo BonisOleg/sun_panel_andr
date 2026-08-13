@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Кошик — {{ site_settings.site_name|default:"Soliron" }}{% endblock %}
+{% block content %}
+<div class="container section--tight cart-page">
+  <header class="page-head">
+    <h1>Кошик</h1>
+    {% if items %}
+      <p>Перевірте товари перед оформленням замовлення</p>
+    {% endif %}
+  </header>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+  {% include "commerce/partials/cart_body.html" %}
+</div>
+{% endblock %}

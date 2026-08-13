@@ -1,0 +1,149 @@
+{% if items %}
+<div
+  class="cart-items{% if not cart_page %} cart-items--embed{% endif %}"
+  {% if not cart_page %}id="cart-table"{% endif %}
+>
+  {% for item in items %}
+    {% with main=item.product.main_images %}
+    <article class="cart-item">
+      <a
+        class="cart-item__thumb"
+        href="{% url 'catalog:product' item.product.slug %}"
+        tabindex="-1"
+        aria-hidden="true"
+      >
+        {% if main %}
+          <img
+            src="{{ main.0.image.url }}"
+            alt=""
+            width="90"
+            height="90"
+            loading="lazy"
+            decoding="async"
+          >
+        {% else %}
+          {% with img=item.product.images.all.0 %}
+            {% if img %}
+              <img
+                src="{{ img.image.url }}"
+                alt=""
+                width="90"
+                height="90"
+                loading="lazy"
+                decoding="async"
+              >
+            {% else %}
+              <span class="cart-item__thumb-placeholder" aria-hidden="true"></span>
+            {% endif %}
+          {% endwith %}
+        {% endif %}
+      </a>
+
+      <div class="cart-item__info">
+        <a class="cart-item__name" href="{% url 'catalog:product' item.product.slug %}">
+          {{ item.product.name }}
+        </a>
+        <p class="cart-item__unit">
+          {% if item.unit_price_uah %}
+            {{ item.unit_price_uah }} грн
+            <span class="cart-item__unit-label">за од.</span>
+          {% else %}
+            за запитом
+          {% endif %}
+        </p>
+      </div>
+
+      <div class="cart-item__qty">
+        <form
+          class="cart-item__qty-form"
+          method="post"
+          action="{% url 'commerce:cart_update' item.id %}"
+          hx-post="{% url 'commerce:cart_update' item.id %}"
+          hx-trigger="change"
+          hx-target="#{% if cart_page %}cart-body{% else %}cart-table{% endif %}"
+          hx-swap="outerHTML"
+        >
+          {% csrf_token %}
+          <div class="quantity-picker cart-qty-picker" data-qty-picker data-cart-qty-picker>
+            <button type="button" class="qty-btn" data-qty-minus aria-label="Зменшити кількість">−</button>
+            <input
+              class="qty-input"
+              type="number"
+              name="qty"
+              value="{{ item.qty }}"
+              min="1"
+              max="999"
+              inputmode="numeric"
+              aria-label="Кількість"
+              data-qty-input
+            >
+            <button type="button" class="qty-btn" data-qty-plus aria-label="Збільшити кількість">+</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="cart-item__price" aria-label="Ціна за одиницю">
+        {% if item.unit_price_uah %}
+          <strong>{{ item.unit_price_uah }} грн</strong>
+        {% else %}
+          <strong>за запитом</strong>
+        {% endif %}
+      </div>
+
+      <form
+        class="cart-item__remove"
+        method="post"
+        action="{% url 'commerce:cart_remove' item.id %}"
+        hx-post="{% url 'commerce:cart_remove' item.id %}"
+        hx-target="#{% if cart_page %}cart-body{% else %}cart-table{% endif %}"
+        hx-swap="outerHTML"
+      >
+        {% csrf_token %}
+        <button class="cart-item__remove-btn" type="submit" aria-label="Видалити товар">
+          <svg class="cart-item__remove-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M4 7h16"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+            <path
+              d="M9 7V5.8A1.8 1.8 0 0 1 10.8 4h2.4A1.8 1.8 0 0 1 15 5.8V7"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M6.5 7.5l.7 11.2A2 2 0 0 0 9.2 20.5h5.6a2 2 0 0 0 2-1.8l.7-11.2"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M10 11v5.5M14 11v5.5"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </form>
+    </article>
+    {% endwith %}
+  {% endfor %}
+
+  {% if not cart_page %}
+    <p class="cart-items__footer">
+      <strong>Разом:</strong> {{ subtotal }} грн
+    </p>
+  {% endif %}
+</div>
+{% else %}
+  {% if cart_page %}
+    {# empty для сторінки кошика рендериться в cart_body.html #}
+  {% else %}
+    <p class="empty cart-empty--embed" id="cart-table">Кошик порожній</p>
+  {% endif %}
+{% endif %}

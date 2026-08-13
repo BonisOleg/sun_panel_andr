@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load static richtext_tags %}
+{% block title %}{{ site_settings.site_name|default:"Soliron" }} — сонячні панелі та кріплення{% endblock %}
+{% block content %}
+<section class="hero" id="hero" aria-labelledby="hero-title">
+  <div class="container hero__inner">
+    <div class="hero__content">
+      {% if home.status_text %}
+        <div class="hero__status" role="status">
+          <span class="hero__pulse" aria-hidden="true"></span>
+          <span class="hero__status-text">{{ home.status_text }}</span>
+        </div>
+      {% endif %}
+
+      <h1 class="hero__title" id="hero-title">
+        {{ home.title_before }}{% if home.title_highlight %} <span class="hero__highlight">{{ home.title_highlight }}</span>{% endif %}{% if home.title_after %} {{ home.title_after }}{% endif %}
+      </h1>
+
+      {% if home.lead %}
+        <p class="hero__lead">{{ home.lead }}</p>
+      {% endif %}
+
+      <div class="hero__actions">
+        {% if home.cta_primary_label and home.cta_primary_url %}
+          <a class="btn btn-glow" href="{{ home.cta_primary_url }}">{{ home.cta_primary_label }}</a>
+        {% endif %}
+        {% if home.cta_secondary_label and home.cta_secondary_url %}
+          <a class="btn btn--ghost btn-secondary" href="{{ home.cta_secondary_url }}">{{ home.cta_secondary_label }}</a>
+        {% endif %}
+      </div>
+
+      {% if home.offer_enabled %}
+        <div
+          class="hero__offer"
+          id="hero-offer"
+          hx-get="{% url 'content:hero_offer' %}"
+          hx-trigger="load"
+          hx-swap="innerHTML"
+        >
+          <span class="htmx-indicator">Завантаження пропозиції…</span>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="hero__visual" id="heroVisualCard" data-hero-tilt>
+      <div class="hero__visual-frame">
+        {% if home.image %}
+          <picture>
+            {% if home.image_mobile %}
+              <source media="(max-width: 767px)" srcset="{{ home.image_mobile.url }}">
+            {% endif %}
+            <img
+              src="{{ home.image.url }}"
+              alt="{{ home.image_alt|default:site_settings.site_name }}"
+              width="1400"
+              height="1050"
+              decoding="async"
+              fetchpriority="high"
+            >
+          </picture>
+        {% else %}
+          <div class="hero__visual-fallback" aria-hidden="true"></div>
+        {% endif %}
+
+        <div class="hero__glare" aria-hidden="true"></div>
+
+        {% if home.float_badge_title or home.float_badge_subtitle %}
+          <div class="hero__float-badge">
+            <span class="hero__float-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"/>
+              </svg>
+            </span>
+            <span class="hero__float-info">
+              {% if home.float_badge_title %}<strong>{{ home.float_badge_title }}</strong>{% endif %}
+              {% if home.float_badge_subtitle %}<small>{{ home.float_badge_subtitle }}</small>{% endif %}
+            </span>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="categories-section" id="categories" aria-labelledby="categories-title">
+  <div class="categories-clouds" aria-hidden="true">
+    <div class="categories-clouds__layer categories-clouds__layer--back" data-parallax="0.12"></div>
+    <div class="categories-clouds__layer categories-clouds__layer--mid" data-parallax="0.22"></div>
+    <div class="categories-clouds__layer categories-clouds__layer--front-left" data-parallax="0.38"></div>
+    <div class="categories-clouds__layer categories-clouds__layer--front-right" data-parallax="0.42"></div>
+    <div class="categories-clouds__layer categories-clouds__layer--sheet" data-parallax="0.28"></div>
+  </div>
+  <div class="categories-overlay" aria-hidden="true"></div>
+
+  <div class="container categories-section__content">
+    <div class="section-header">
+      {% if home.categories_eyebrow %}
+        <span class="section-subtitle">{{ home.categories_eyebrow }}</span>
+      {% endif %}
+      <h2 class="section-title" id="categories-title">{{ home.categories_title }}</h2>
+      {% if home.categories_description %}
+        <p class="section-description">{{ home.categories_description }}</p>
+      {% endif %}
+    </div>
+
+    <div class="categories-grid">
+      {% include "content/partials/category_grid.html" %}
+    </div>
+  </div>
+</section>
+
+<section class="section advantages-section" id="about" aria-labelledby="advantages-title">
+  <div class="container">
+    <div class="section-header">
+      {% if home.advantages_eyebrow %}
+        <span class="section-subtitle">{{ home.advantages_eyebrow }}</span>
+      {% endif %}
+      <h2 class="section-title" id="advantages-title">{{ home.advantages_title }}</h2>
+      {% if home.advantages_description %}
+        <p class="section-description">{{ home.advantages_description }}</p>
+      {% endif %}
+    </div>
+    <div class="advantages-grid">
+      {% for item in advantages %}
+        <article
+          class="advantage-card"
+          style="--stagger: {{ forloop.counter }}"
+        >
+          <span class="card-number" aria-hidden="true">{% if forloop.counter < 10 %}0{% endif %}{{ forloop.counter }}</span>
+          <div class="advantage-icon-wrap" aria-hidden="true">
+            {% if item.icon %}
+              <img class="advantage-icon" src="{{ item.icon.url }}" alt="">
+            {% elif forloop.counter == 1 %}
+              <svg class="advantage-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            {% elif forloop.counter == 2 %}
+              <svg class="advantage-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="3" width="15" height="13" rx="2"/>
+                <path d="M16 8h4l3 3v5h-7V8z"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+            {% elif forloop.counter == 3 %}
+              <svg class="advantage-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            {% else %}
+              <svg class="advantage-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            {% endif %}
+          </div>
+          <h3 class="advantage-title">{{ item.title }}</h3>
+          <div class="advantage-desc richtext">{{ item.text|richtext }}</div>
+          <div class="card-glow-layer" aria-hidden="true"></div>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/advantages.js' %}?v={{ static_version }}" defer></script>
+<script src="{% static 'js/categories.js' %}?v={{ static_version }}" defer></script>
+{% endblock %}

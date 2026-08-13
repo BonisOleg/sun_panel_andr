@@ -1,0 +1,119 @@
+<form
+  class="contacts-form"
+  method="post"
+  action="{% url 'content:contacts' %}"
+  hx-post="{% url 'content:contacts' %}"
+  hx-target="#contact-form-wrap"
+  hx-swap="innerHTML"
+  hx-disabled-elt="find button[type='submit']"
+  data-contacts-form
+  novalidate
+>
+  {% csrf_token %}
+  <h2 id="contacts-form-title">{{ site_settings.contacts_form_title|default:"Зворотний звʼязок" }}</h2>
+
+  {% if errors.form %}
+    <div class="contacts-form__alert" role="alert">{{ errors.form }}</div>
+  {% endif %}
+
+  <div class="contacts-form__field{% if errors.name %} is-invalid{% endif %}" data-field="name">
+    <label class="contacts-form__label" for="contact-name">
+      Імʼя <abbr title="обовʼязкове">*</abbr>
+    </label>
+    <input
+      id="contact-name"
+      name="name"
+      type="text"
+      autocomplete="name"
+      maxlength="255"
+      value="{{ form.name|default:'' }}"
+      aria-describedby="error-contact-name"
+      {% if errors.name %}aria-invalid="true"{% endif %}
+    >
+    <p
+      class="contacts-form__error"
+      id="error-contact-name"
+      data-error-for="name"
+      {% if not errors.name %}hidden{% endif %}
+    >{{ errors.name|default:"" }}</p>
+  </div>
+
+  <div class="contacts-form__field{% if errors.phone %} is-invalid{% endif %}" data-field="phone">
+    <span class="contacts-form__label" id="contact-phone-label">
+      Телефон <abbr title="обовʼязкове">*</abbr>
+    </span>
+    <div class="phone-input">
+      <span class="phone-input__prefix" aria-hidden="true">+380</span>
+      <input
+        id="contact-phone-rest"
+        type="tel"
+        inputmode="numeric"
+        autocomplete="tel-national"
+        maxlength="9"
+        placeholder="501234567"
+        aria-labelledby="contact-phone-label"
+        aria-describedby="error-contact-phone"
+        data-phone-rest
+        {% if errors.phone %}aria-invalid="true"{% endif %}
+      >
+    </div>
+    <input
+      type="hidden"
+      name="phone"
+      id="contact-phone"
+      value="{{ form.phone|default:'+380' }}"
+      data-phone-full
+    >
+    <p
+      class="contacts-form__error"
+      id="error-contact-phone"
+      data-error-for="phone"
+      {% if not errors.phone %}hidden{% endif %}
+    >{{ errors.phone|default:"" }}</p>
+  </div>
+
+  <div class="contacts-form__field{% if errors.email %} is-invalid{% endif %}" data-field="email">
+    <label class="contacts-form__label" for="contact-email">Email</label>
+    <input
+      id="contact-email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      value="{{ form.email|default:'' }}"
+      placeholder="email@example.com"
+      aria-describedby="error-contact-email"
+      {% if errors.email %}aria-invalid="true"{% endif %}
+    >
+    <p
+      class="contacts-form__error"
+      id="error-contact-email"
+      data-error-for="email"
+      {% if not errors.email %}hidden{% endif %}
+    >{{ errors.email|default:"" }}</p>
+  </div>
+
+  <div class="contacts-form__field{% if errors.message %} is-invalid{% endif %}" data-field="message">
+    <label class="contacts-form__label" for="contact-message">
+      Повідомлення <abbr title="обовʼязкове">*</abbr>
+    </label>
+    <textarea
+      id="contact-message"
+      name="message"
+      rows="5"
+      maxlength="800"
+      aria-describedby="error-contact-message"
+      {% if errors.message %}aria-invalid="true"{% endif %}
+    >{{ form.message|default:'' }}</textarea>
+    <p
+      class="contacts-form__error"
+      id="error-contact-message"
+      data-error-for="message"
+      {% if not errors.message %}hidden{% endif %}
+    >{{ errors.message|default:"" }}</p>
+  </div>
+
+  <button class="contacts-form__submit btn btn-glow" type="submit">
+    <span class="contacts-form__submit-label">Надіслати повідомлення</span>
+    <span class="contacts-form__spinner htmx-indicator" aria-hidden="true"></span>
+  </button>
+</form>

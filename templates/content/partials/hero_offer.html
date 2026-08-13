@@ -1,0 +1,12 @@
+{% load richtext_tags %}
+{% if home.offer_enabled %}
+  <div class="hero__offer-card">
+    <strong>{{ home.offer_title|default:"Спецпропозиція Soliron" }}</strong>
+    {% if home.offer_subtitle %}
+      <div class="richtext hero__offer-richtext">{{ home.offer_subtitle|richtext }}</div>
+    {% endif %}
+    {% if home.offer_link_url and home.offer_link_label %}
+      <a class="btn" href="{{ home.offer_link_url }}">{{ home.offer_link_label }}</a>
+    {% endif %}
+  </div>
+{% endif %}

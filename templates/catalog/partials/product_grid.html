@@ -1,0 +1,115 @@
+{% if products %}
+  {% for product in products %}
+    {% with img=product.images.all.0 %}
+    <article class="product-card">
+      <div class="card-image-wrap">
+        {% if product.display_card_badge %}
+          <span class="stock-badge stock-badge--{{ product.display_card_badge_style }}">
+            {{ product.display_card_badge }}
+          </span>
+        {% endif %}
+        {% if img %}
+          <img
+            src="{{ img.image.url }}"
+            alt="{{ img.alt|default:product.name }}"
+            class="product-img"
+            loading="lazy"
+            width="480"
+            height="360"
+          >
+        {% endif %}
+      </div>
+
+      <div class="card-content">
+        <span class="category-tag">
+          {% if product.category %}{{ product.category.name }}{% else %}Обладнання{% endif %}
+        </span>
+        <h3 class="product-title">
+          <a href="{% url 'catalog:product' product.slug %}">{{ product.name }}</a>
+        </h3>
+
+        <div class="card-bottom">
+          <div class="price-box">
+            {% if product.price_uah %}
+              <span class="price">{{ product.price_uah }}&nbsp;₴</span>
+            {% endif %}
+          </div>
+          <div class="button-group">
+            <a href="{% url 'catalog:product' product.slug %}" class="btn-outline">Докладніше</a>
+            {% if product.can_add_to_cart %}
+              <form
+                class="cart-add-form"
+                method="post"
+                action="{% url 'commerce:cart_add' product.id %}"
+                hx-post="{% url 'commerce:cart_add' product.id %}"
+                hx-target="#cart-badge"
+                hx-swap="innerHTML"
+                hx-sync="closest form:abort"
+                data-cart-add-form
+              >
+                {% csrf_token %}
+                <input type="hidden" name="qty" value="1">
+                <div class="cart-add-control">
+                  <button type="submit" class="btn btn-glow btn-buy" data-cart-add-btn>
+                    <span class="btn__label">Купити</span>
+                  </button>
+                  <p class="cart-add-msg" data-cart-add-msg role="status" hidden>Товар додано до кошика</p>
+                </div>
+              </form>
+            {% else %}
+              <a href="{% url 'catalog:product' product.slug %}" class="btn btn-glow btn-buy"><span class="btn__label">Деталі</span></a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </article>
+    {% endwith %}
+  {% endfor %}
+{% else %}
+  <p class="empty empty--span">Нічого не знайдено</p>
+{% endif %}
+
+{% if page_obj.has_other_pages %}
+  <nav class="blog-pagination catalog-grid__pager" aria-label="Сторінки">
+    {% if page_obj.has_previous %}
+      <a
+        class="btn btn--ghost"
+        href="{% querystring page=page_obj.previous_page_number %}"
+        hx-get="{% querystring page=page_obj.previous_page_number %}"
+        hx-target="#catalog-grid"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+      >Назад</a>
+    {% endif %}
+
+    <div class="blog-pagination__pages">
+      {% for num in page_obj.paginator.page_range %}
+        {% if num == page_obj.number %}
+          <span class="blog-pagination__page is-current" aria-current="page">{{ num }}</span>
+        {% else %}
+          <a
+            class="blog-pagination__page"
+            href="{% querystring page=num %}"
+            hx-get="{% querystring page=num %}"
+            hx-target="#catalog-grid"
+            hx-swap="innerHTML"
+            hx-push-url="true"
+          >{{ num }}</a>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    <span class="blog-pagination__status">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+
+    {% if page_obj.has_next %}
+      <a
+        class="btn btn--ghost"
+        href="{% querystring page=page_obj.next_page_number %}"
+        hx-get="{% querystring page=page_obj.next_page_number %}"
+        hx-target="#catalog-grid"
+        hx-swap="innerHTML"
+        hx-push-url="true"
+      >Далі</a>
+    {% endif %}
+  </nav>
+{% endif %}

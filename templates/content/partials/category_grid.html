@@ -1,0 +1,30 @@
+{% if categories %}
+  {% for cat in categories %}
+    <a href="{% url 'catalog:category' cat.slug %}" class="category-card">
+      <div class="category-image-wrap">
+        {% if cat.display_card_badge %}
+          <span class="stock-badge stock-badge--{{ cat.card_badge_style }}">{{ cat.display_card_badge }}</span>
+        {% endif %}
+        {% if cat.image %}
+          <img
+            src="{{ cat.image.url }}"
+            alt="{{ cat.name }}"
+            class="category-img"
+            loading="lazy"
+            width="480"
+            height="360"
+          >
+        {% endif %}
+      </div>
+      <div class="category-info">
+        <span class="category-label">Категорія</span>
+        <h3 class="category-name">{{ cat.name }}</h3>
+        <div class="category-arrow" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </div>
+      </div>
+    </a>
+  {% endfor %}
+{% endif %}

@@ -1,0 +1,24 @@
+/* TinyMCE inside django-unfold dark/light admin */
+.tox-tinymce {
+  border-radius: 0.5rem;
+  border-color: rgb(55 65 81);
+}
+
+.tox .tox-edit-area__iframe {
+  background: #fff;
+}
+
+.tox-statusbar__path-item,
+.tox-statusbar__wordcount {
+  font-size: 12px;
+}
+
+/* Не давати редактору роздувати форму на вузьких екранах адмінки */
+.tox-tinymce {
+  max-width: 100%;
+}
+
+.field-body .tox-tinymce,
+.field-description .tox-tinymce {
+  min-height: 320px;
+}

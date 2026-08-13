@@ -1,0 +1,211 @@
+/* Cart summary, empty state, checkout embed, iOS */
+
+/* Підсумок замовлення (sidebar) */
+.cart-summary {
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .cart-summary {
+    position: sticky;
+    top: calc(var(--header-h) + var(--safe-top) + 20px);
+  }
+}
+
+.cart-summary__card {
+  padding: 1.35rem 1.25rem 1.25rem;
+  background: var(--c-bg-elevated);
+  border: 1px solid rgb(108 86 133 / 0.08);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 0.05);
+}
+
+.cart-summary__title {
+  margin: 0 0 1.1rem;
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--c-brand);
+  line-height: var(--lh-tight);
+}
+
+.cart-summary__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0 0 1.25rem;
+}
+
+.cart-summary__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+.cart-summary__row dt {
+  margin: 0;
+  color: var(--c-muted);
+  font-weight: 500;
+}
+
+.cart-summary__row dd {
+  margin: 0;
+  color: var(--c-brand);
+  font-weight: 700;
+  text-align: right;
+}
+
+.cart-summary__muted {
+  font-weight: 600;
+  color: var(--c-muted);
+  font-size: var(--fs-xs);
+}
+
+.cart-summary__row--total {
+  padding-top: 0.85rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.cart-summary__row--total dt,
+.cart-summary__row--total dd {
+  color: var(--c-brand);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.cart-summary__checkout {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  min-height: 3.1rem;
+  font-size: 1.05rem;
+  pointer-events: auto;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.cart-summary__continue {
+  width: 100%;
+  margin-top: 0.65rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.cart-trust {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin: 1.15rem 0 0;
+  padding: 0.9rem 0 0;
+  border-top: 1px solid #f0f0f0;
+  list-style: none;
+}
+
+.cart-trust__item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--c-muted);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.cart-trust__item svg {
+  flex-shrink: 0;
+  color: var(--c-brand);
+}
+
+/* Empty state */
+.cart-empty {
+  width: 100%;
+}
+
+.cart-empty__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 28rem;
+  margin-inline: auto;
+  padding: clamp(2rem, 6vw, 3.25rem) 1.5rem;
+  text-align: center;
+  background: var(--c-bg-elevated);
+  border: 1px solid rgb(108 86 133 / 0.08);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 0.05);
+}
+
+.cart-empty__icon {
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  margin-bottom: 1rem;
+  border-radius: 999px;
+  background: rgb(108 86 133 / 0.06);
+  color: var(--c-brand);
+}
+
+.cart-empty__title {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  color: var(--c-brand);
+}
+
+.cart-empty__text {
+  margin: 0 0 1.35rem;
+  color: var(--c-muted);
+  font-size: var(--fs-sm);
+  max-width: 22rem;
+}
+
+.cart-empty--embed {
+  margin: 0;
+}
+
+/* Checkout embed: компактніший список */
+.checkout-aside .cart-item {
+  padding-inline: 0.25rem;
+}
+
+.checkout-aside .cart-item__thumb {
+  width: 64px;
+  height: 64px;
+}
+
+.checkout-aside .cart-list-card__head {
+  display: none;
+}
+
+/* iOS Safari: уникнути zoom на input і зрізання sticky */
+@supports (-webkit-touch-callout: none) {
+  .cart-qty-picker .qty-input {
+    font-size: 16px;
+  }
+
+  .cart-summary {
+    /* sticky + overflow предків на iOS */
+    position: static;
+  }
+
+  @media (min-width: 900px) {
+    .cart-summary {
+      position: sticky;
+      top: calc(var(--header-h) + var(--safe-top) + 20px);
+    }
+  }
+}
+
+/* Legacy qty (fallback) */
+.qty-input {
+  width: 4.5rem;
+  min-height: 2.5rem;
+  padding: 0.35rem 0.45rem;
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius-sm);
+  background: var(--c-bg-elevated);
+}

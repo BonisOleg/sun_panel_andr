@@ -1,0 +1,37 @@
+{% if q|length >= 2 %}
+  {% if products %}
+    <ul class="header-search__list" role="listbox" aria-label="Підказки пошуку">
+      {% for product in products %}
+        {% with img=product.images.all.0 %}
+        <li class="header-search__item" role="option">
+          <a class="header-search__link" href="{% url 'catalog:product' product.slug %}">
+            <span class="header-search__thumb" aria-hidden="true">
+              {% if img %}
+                <img
+                  src="{{ img.image.url }}"
+                  alt=""
+                  width="48"
+                  height="48"
+                  loading="lazy"
+                  decoding="async"
+                >
+              {% endif %}
+            </span>
+            <span class="header-search__meta">
+              <span class="header-search__name">{{ product.name }}</span>
+              {% if product.price_uah %}
+                <span class="header-search__price">{{ product.price_uah }}&nbsp;₴</span>
+              {% endif %}
+            </span>
+          </a>
+        </li>
+        {% endwith %}
+      {% endfor %}
+    </ul>
+    <a class="header-search__all" href="{% url 'catalog:list' %}?q={{ q|urlencode }}">
+      Усі результати для «{{ q }}»
+    </a>
+  {% else %}
+    <p class="header-search__empty">Нічого не знайдено</p>
+  {% endif %}
+{% endif %}

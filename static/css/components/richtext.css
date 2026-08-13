@@ -1,0 +1,86 @@
+/* Richtext з TinyMCE — мобільна безпека (iOS Safari) */
+
+.richtext {
+  max-width: 100%;
+  overflow-x: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.richtext > *:first-child {
+  margin-top: 0;
+}
+
+.richtext > *:last-child {
+  margin-bottom: 0;
+}
+
+.richtext p,
+.richtext ul,
+.richtext ol,
+.richtext blockquote,
+.richtext table {
+  margin: 0 0 var(--space-3);
+}
+
+.richtext ul,
+.richtext ol {
+  padding-left: 1.35rem;
+}
+
+.richtext li {
+  margin: 0 0 var(--space-1);
+}
+
+.richtext img,
+.richtext figure {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: var(--space-3) 0;
+}
+
+.richtext img {
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.richtext table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.richtext th,
+.richtext td {
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--c-line);
+  vertical-align: top;
+}
+
+.richtext iframe,
+.richtext video,
+.richtext embed,
+.richtext object {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .richtext h2 {
+    font-size: clamp(1.2rem, 5vw, 1.5rem);
+  }
+
+  .richtext h3 {
+    font-size: clamp(1.05rem, 4.2vw, 1.25rem);
+  }
+
+  .richtext table {
+    font-size: var(--fs-xs);
+  }
+}

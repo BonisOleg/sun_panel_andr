@@ -1,0 +1,109 @@
+{% load static %}
+<header class="site-header" data-site-header>
+  <div class="container site-header__inner">
+    <a class="site-header__brand" href="{% url 'core:home' %}" aria-label="{{ site_settings.site_name|default:'Soliron' }} — на головну">
+      <img
+        class="site-header__logo"
+        src="{{ site_settings.logo_url }}"
+        alt="{{ site_settings.site_name|default:'Soliron' }}"
+        width="212"
+        height="50"
+        decoding="async"
+      >
+    </a>
+
+    <nav class="site-nav" id="site-nav" aria-label="Головна навігація">
+      <div class="site-nav__links">
+        <a
+          class="site-nav__link{% if request.resolver_match.url_name == 'home' %} is-active{% endif %}"
+          href="{% url 'core:home' %}"
+          {% if request.resolver_match.url_name == 'home' %}aria-current="page"{% endif %}
+        >Головна</a>
+        <a
+          class="site-nav__link{% if request.resolver_match.namespace == 'catalog' %} is-active{% endif %}"
+          href="{% url 'catalog:list' %}"
+          {% if request.resolver_match.namespace == 'catalog' %}aria-current="page"{% endif %}
+        >Каталог</a>
+        <a
+          class="site-nav__link{% if request.resolver_match.url_name == 'blog_list' or request.resolver_match.url_name == 'blog_detail' %} is-active{% endif %}"
+          href="{% url 'content:blog_list' %}"
+          {% if request.resolver_match.url_name == 'blog_list' or request.resolver_match.url_name == 'blog_detail' %}aria-current="page"{% endif %}
+        >Блог</a>
+        <a
+          class="site-nav__link{% if request.resolver_match.url_name == 'contacts' %} is-active{% endif %}"
+          href="{% url 'content:contacts' %}"
+          {% if request.resolver_match.url_name == 'contacts' %}aria-current="page"{% endif %}
+        >Контакти</a>
+      </div>
+    </nav>
+
+    <form
+      class="header-search"
+      action="{% url 'catalog:list' %}"
+      method="get"
+      role="search"
+      data-header-search
+      id="header-search-form"
+    >
+      <label class="visually-hidden" for="header-search">Пошук</label>
+      <svg class="header-search__icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+        <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M16.5 16.5L21 21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <input
+        class="header-search__input"
+        id="header-search"
+        type="search"
+        name="q"
+        placeholder="Пошук"
+        value="{{ request.GET.q|default:'' }}"
+        enterkeyhint="search"
+        autocomplete="off"
+        hx-get="{% url 'catalog:search' %}"
+        hx-trigger="keyup changed delay:300ms, search"
+        hx-target="#header-search-results"
+        hx-swap="innerHTML"
+        hx-sync="this:replace"
+        hx-include="this"
+      >
+      <div
+        id="header-search-results"
+        class="header-search__results"
+        data-header-search-results
+        hidden
+      ></div>
+    </form>
+
+    <div class="site-header__actions">
+      <a class="btn btn--brand site-header__cta" href="{% url 'content:contacts' %}">Звʼязатися</a>
+      <a class="cart-link" href="{% url 'commerce:cart' %}" id="cart-badge">
+        {% include "commerce/partials/cart_badge.html" %}
+      </a>
+      <button
+        class="site-header__search-toggle"
+        type="button"
+        data-search-toggle
+        aria-expanded="false"
+        aria-controls="header-search-form"
+        aria-label="Відкрити пошук"
+      >
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+          <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M16.5 16.5L21 21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <button
+        class="site-header__toggle"
+        type="button"
+        data-nav-toggle
+        aria-expanded="false"
+        aria-controls="site-nav"
+        aria-label="Меню"
+      >
+        <span class="site-header__toggle-bars" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>

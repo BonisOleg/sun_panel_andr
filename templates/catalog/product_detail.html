@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ product.name }} — {{ site_settings.site_name|default:"Soliron" }}{% endblock %}
+{% block content %}
+<section class="product-page-section" data-product-page>
+  <div class="container product-page-container">
+    <nav class="breadcrumbs" aria-label="Навігаційний ланцюжок">
+      <a href="{% url 'core:home' %}">Головна</a>
+      <span aria-hidden="true">/</span>
+      <a href="{% url 'catalog:list' %}">Каталог</a>
+      {% for crumb in breadcrumbs %}
+        <span aria-hidden="true">/</span>
+        <a href="{% url 'catalog:category' crumb.slug %}">{{ crumb.name }}</a>
+      {% endfor %}
+      <span aria-hidden="true">/</span>
+      <span class="current">{{ product.name }}</span>
+    </nav>
+
+    <div class="product-detail-grid">
+      <div class="product-gallery">
+        <div class="main-image-box" data-gallery-main>
+          <span class="stock-badge stock-badge--{{ product.display_card_badge_style }}">
+            {{ product.availability_label|default:product.get_availability_display }}
+          </span>
+          {% if product_images %}
+            <img
+              id="mainProductImg"
+              class="main-img"
+              src="{{ product_images.0.image.url }}"
+              alt="{{ product_images.0.alt|default:product.name }}"
+              data-gallery-image
+            >
+          {% else %}
+            <div class="main-img-empty" aria-hidden="true"></div>
+          {% endif %}
+          {% if product_images %}
+            <button type="button" class="zoom-btn" data-gallery-zoom title="Збільшити фото" aria-label="Збільшити фото">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>
+              </svg>
+            </button>
+          {% endif %}
+        </div>
+
+        {% if product_images|length > 1 %}
+          <div class="thumbnail-list" role="list" data-gallery-thumbs>
+            {% for img in product_images %}
+              <button
+                type="button"
+                class="thumb-btn{% if forloop.first %} is-active{% endif %}"
+                data-gallery-thumb
+                data-src="{{ img.image.url }}"
+                data-alt="{{ img.alt|default:product.name }}"
+                aria-label="Фото {{ forloop.counter }}"
+              >
+                <img src="{{ img.image.url }}" alt="" loading="lazy" width="80" height="80">
+              </button>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <aside class="product-info-panel">
+        {% if product.sku %}
+          <span class="product-sku">Артикул: {{ product.sku }}</span>
+        {% endif %}
+        <h1 class="product-title">{{ product.name }}</h1>
+
+        {% if product_short_desc %}
+          <p class="product-short-desc">{{ product_short_desc }}</p>
+        {% endif %}
+
+        <div class="price-container">
+          {% if product.price_uah %}
+            <div class="current-price">
+              <span class="current-price__value">{{ product.price_uah }}&nbsp;₴</span>
+              <span class="price-unit">/ шт</span>
+            </div>
+          {% else %}
+            <div class="current-price current-price--muted">Ціну уточнюйте</div>
+          {% endif %}
+        </div>
+
+        {% if product.can_add_to_cart %}
+          <form
+            class="purchase-action-group cart-add-form"
+            method="post"
+            action="{% url 'commerce:cart_add' product.id %}"
+            hx-post="{% url 'commerce:cart_add' product.id %}"
+            hx-target="#cart-badge"
+            hx-swap="innerHTML"
+            data-purchase-form
+            data-cart-add-form
+          >
+            {% csrf_token %}
+            <div class="quantity-picker" data-qty-picker>
+              <button type="button" class="qty-btn" data-qty-minus aria-label="Зменшити кількість">−</button>
+              <input
+                class="qty-input"
+                type="number"
+                name="qty"
+                value="1"
+                min="1"
+                max="999"
+                inputmode="numeric"
+                aria-label="Кількість"
+                data-qty-input
+              >
+              <button type="button" class="qty-btn" data-qty-plus aria-label="Збільшити кількість">+</button>
+            </div>
+            <div class="cart-add-control">
+              <button class="btn btn-glow btn-add-cart" type="submit" data-cart-add-btn>
+                <span class="btn__label">Додати в кошик</span>
+              </button>
+              <p class="cart-add-msg" data-cart-add-msg role="status" hidden>Товар додано до кошика</p>
+            </div>
+          </form>
+        {% else %}
+          <p class="purchase-unavailable">Товар недоступний для замовлення</p>
+        {% endif %}
+
+        {% if product_quick_specs %}
+          <div class="quick-specs-box">
+            {% for label, value in product_quick_specs %}
+              <div class="spec-item">
+                <span class="spec-label">{{ label }}:</span>
+                <span class="spec-val">{{ value }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </aside>
+    </div>
+
+    <div class="product-tabs" data-product-tabs>
+      <div class="product-tabs__nav" role="tablist" aria-label="Деталі товару">
+        <button type="button" class="product-tabs__btn is-active" role="tab" aria-selected="true" data-tab="desc">Опис</button>
+        <button type="button" class="product-tabs__btn" role="tab" aria-selected="false" data-tab="specs">Характеристики</button>
+        <button type="button" class="product-tabs__btn" role="tab" aria-selected="false" data-tab="delivery">Доставка та оплата</button>
+      </div>
+
+      <div class="product-tabs__panel is-active" role="tabpanel" data-tab-panel="desc">
+        {% if product_description_html %}
+          <div class="product-tabs__body richtext">{{ product_description_html }}</div>
+        {% else %}
+          <p class="product-tabs__empty">Опис зʼявиться пізніше.</p>
+        {% endif %}
+      </div>
+
+      <div class="product-tabs__panel" role="tabpanel" data-tab-panel="specs" hidden>
+        {% if product_specs %}
+          <dl class="specs-table">
+            {% for label, value in product_specs %}
+              <div class="specs-table__row">
+                <dt>{{ label }}</dt>
+                <dd>{{ value }}</dd>
+              </div>
+            {% endfor %}
+          </dl>
+        {% else %}
+          <p class="product-tabs__empty">Характеристики не вказані в описі. Уточнюйте у менеджера.</p>
+        {% endif %}
+      </div>
+
+      <div class="product-tabs__panel" role="tabpanel" data-tab-panel="delivery" hidden>
+        <div class="product-tabs__body">
+          <p>Доставка: самовивіз, курʼєр Delivery або відділення Нової Пошти (вибір на оформленні замовлення).</p>
+          <p>Оплата: рахунок-фактура або готівка. Онлайн-оплата на сайті відсутня.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<dialog class="product-lightbox" data-product-lightbox aria-label="Перегляд фото">
+  <button type="button" class="product-lightbox__close" data-lightbox-close aria-label="Закрити">×</button>
+  <div class="product-lightbox__frame" data-lightbox-stage>
+    <button
+      type="button"
+      class="product-lightbox__nav product-lightbox__nav--prev"
+      data-lightbox-prev
+      aria-label="Попереднє фото"
+      hidden
+    >
+      <span aria-hidden="true">‹</span>
+    </button>
+    <img src="" alt="" data-lightbox-img>
+    <button
+      type="button"
+      class="product-lightbox__nav product-lightbox__nav--next"
+      data-lightbox-next
+      aria-label="Наступне фото"
+      hidden
+    >
+      <span aria-hidden="true">›</span>
+    </button>
+  </div>
+  <p class="product-lightbox__counter" data-lightbox-counter hidden aria-live="polite"></p>
+  <div class="product-lightbox__thumbs" data-lightbox-thumbs role="list" hidden></div>
+</dialog>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/product-detail.js' %}?v={{ static_version }}" defer></script>
+{% endblock %}

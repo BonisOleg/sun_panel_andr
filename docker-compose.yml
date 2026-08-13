@@ -1,0 +1,73 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-soliron}
+      POSTGRES_USER: ${POSTGRES_USER:-soliron}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-soliron} -d ${POSTGRES_DB:-soliron}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-soliron}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-soliron}
+      DJANGO_SETTINGS_MODULE: config.settings.production
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+    expose:
+      - "8000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz/', timeout=5)",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 180s
+
+  cron:
+    build: .
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-soliron}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-soliron}
+      DJANGO_SETTINGS_MODULE: config.settings.production
+    volumes:
+      - shipping_sync_logs:/app/data/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["deploy/run_cron.sh"]
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - ./deploy/nginx/docker.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+    depends_on:
+      web:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:
+  shipping_sync_logs:

@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% load static richtext_tags %}
+{% block title %}Оформлення — {{ site_settings.site_name|default:"Soliron" }}{% endblock %}
+{% block extra_js %}
+<script src="{% static 'js/checkout_contacts.js' %}" defer></script>
+<script src="{% static 'js/checkout_np.js' %}" defer></script>
+<script src="{% static 'js/checkout_delivery.js' %}" defer></script>
+{% endblock %}
+{% block content %}
+<div class="container section--tight checkout-page">
+  <header class="page-head">
+    <h1>Оформлення замовлення</h1>
+  </header>
+
+  <ol class="checkout-steps" aria-label="Кроки оформлення">
+    <li class="checkout-steps__item{% if step >= 1 %} is-done{% endif %}{% if step == 1 %} is-current{% endif %}">
+      <span class="checkout-steps__num" aria-hidden="true">1</span>
+      <span class="visually-hidden">Крок 1{% if step == 1 %} (поточний){% endif %}</span>
+    </li>
+    <li class="checkout-steps__item{% if step >= 2 %} is-done{% endif %}{% if step == 2 %} is-current{% endif %}" aria-hidden="false">
+      <span class="checkout-steps__num" aria-hidden="true">2</span>
+      <span class="visually-hidden">Крок 2{% if step == 2 %} (поточний){% endif %}</span>
+    </li>
+    <li class="checkout-steps__item{% if step >= 3 %} is-done{% endif %}{% if step == 3 %} is-current{% endif %}">
+      <span class="checkout-steps__num" aria-hidden="true">3</span>
+      <span class="visually-hidden">Крок 3{% if step == 3 %} (поточний){% endif %}</span>
+    </li>
+  </ol>
+
+  {% if errors %}
+    <ul class="error checkout-errors">
+      {% for key, val in errors.items %}
+        <li>{{ val }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <aside class="checkout-order surface" aria-labelledby="checkout-order-title">
+    <h2 class="checkout-order__title" id="checkout-order-title">Ваше замовлення</h2>
+    {% include "commerce/partials/cart_table.html" %}
+  </aside>
+
+  <form method="post" class="checkout-card surface" novalidate>
+    {% csrf_token %}
+
+    {% if step == 1 %}
+      <h2 class="checkout-card__title">Контактні дані</h2>
+
+      <div class="form-field{% if errors.customer_name %} is-invalid{% endif %}" data-field="customer_name">
+        <label class="label" for="customer-name">ПІБ *</label>
+        <input
+          id="customer-name"
+          name="customer_name"
+          required
+          autocomplete="name"
+          value="{{ draft.customer_name|default:'' }}"
+          placeholder="Прізвище Імʼя По батькові"
+          aria-describedby="error-customer-name"
+          {% if errors.customer_name %}aria-invalid="true"{% endif %}
+        >
+        <p
+          class="field-error"
+          id="error-customer-name"
+          data-error-for="customer_name"
+          {% if not errors.customer_name %}hidden{% endif %}
+        >{{ errors.customer_name|default:"" }}</p>
+      </div>
+
+      <div class="form-field{% if errors.customer_phone %} is-invalid{% endif %}" data-field="customer_phone">
+        <span class="label" id="customer-phone-label">Телефон *</span>
+        <div class="phone-input">
+          <span class="phone-input__prefix" aria-hidden="true">+380</span>
+          <input
+            id="customer-phone-rest"
+            type="tel"
+            inputmode="numeric"
+            autocomplete="tel-national"
+            maxlength="9"
+            placeholder="501234567"
+            aria-labelledby="customer-phone-label"
+            aria-describedby="error-customer-phone"
+            data-phone-rest
+            {% if errors.customer_phone %}aria-invalid="true"{% endif %}
+          >
+        </div>
+        <input
+          type="hidden"
+          name="customer_phone"
+          id="customer-phone"
+          value="{{ draft.customer_phone|default:'+380' }}"
+          data-phone-full
+        >
+        <p
+          class="field-error"
+          id="error-customer-phone"
+          data-error-for="customer_phone"
+          {% if not errors.customer_phone %}hidden{% endif %}
+        >{{ errors.customer_phone|default:"" }}</p>
+      </div>
+
+      <div class="form-field{% if errors.customer_email %} is-invalid{% endif %}" data-field="customer_email">
+        <label class="label" for="customer-email">Email</label>
+        <input
+          id="customer-email"
+          name="customer_email"
+          type="email"
+          autocomplete="email"
+          value="{{ draft.customer_email|default:'' }}"
+          placeholder="email@example.com"
+          aria-describedby="error-customer-email"
+          {% if errors.customer_email %}aria-invalid="true"{% endif %}
+        >
+        <p
+          class="field-error"
+          id="error-customer-email"
+          data-error-for="customer_email"
+          {% if not errors.customer_email %}hidden{% endif %}
+        >{{ errors.customer_email|default:"" }}</p>
+      </div>
+
+      <div class="form-field" data-field="customer_company">
+        <label class="label" for="customer-company">Компанія</label>
+        <input
+          id="customer-company"
+          name="customer_company"
+          autocomplete="organization"
+          value="{{ draft.customer_company|default:'' }}"
+          placeholder="Необовʼязково"
+        >
+      </div>
+
+      <div class="checkout-nav">
+        <span></span>
+        <button class="btn" type="submit" name="action" value="next">
+          <span class="btn__label">Далі →</span>
+        </button>
+      </div>
+
+    {% elif step == 2 %}
+      <h2 class="checkout-card__title">Спосіб доставки</h2>
+      <fieldset class="ship-options">
+        <legend class="visually-hidden">Спосіб доставки</legend>
+        {% for value, label in shipping_choices %}
+          <label class="ship-option">
+            <input
+              type="radio"
+              name="shipping_method"
+              value="{{ value }}"
+              {% if draft.shipping_method == value or not draft.shipping_method and value == "pickup" %}checked{% endif %}
+            >
+            <span class="ship-option__card">
+              <span class="ship-option__icon" aria-hidden="true">
+                {% if value == "pickup" %}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 9.5L12 4l9 5.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                    <path d="M9 21V12h6v9" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                  </svg>
+                {% elif value == "delivery" %}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 7h11v10H3V7zm11 3h4l3 3v4h-7v-7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                    <circle cx="7.5" cy="18.5" r="1.4" fill="currentColor"/>
+                    <circle cx="17.5" cy="18.5" r="1.4" fill="currentColor"/>
+                  </svg>
+                {% else %}
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.7"/>
+                    <path d="M8 8h8M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                  </svg>
+                {% endif %}
+              </span>
+              <span class="ship-option__text">
+                <strong class="ship-option__title">
+                  {% if value == "delivery" %}Delivery{% elif value == "nova_poshta" %}NP Нова Пошта{% else %}{{ label }}{% endif %}
+                </strong>
+                <span class="ship-option__desc">
+                  {% if value == "pickup" %}
+                    {% if site_settings.address %}{{ site_settings.address|plain }} — безкоштовно{% else %}Самовивіз зі складу — безкоштовно{% endif %}
+                  {% elif value == "delivery" %}
+                    Вантажне відділення або адресна доставка (delivery-auto.com)
+                  {% else %}
+                    На відділення — для дрібних комплектуючих
+                  {% endif %}
+                </span>
+              </span>
+            </span>
+          </label>
+        {% endfor %}
+      </fieldset>
+
+      <div id="delivery-fields" class="np-panel" hidden>
+        <fieldset class="da-mode">
+          <legend class="label">Тип доставки Delivery *</legend>
+          <label class="da-mode__option">
+            <input
+              type="radio"
+              name="delivery_mode"
+              value="warehouse"
+              {% if draft.delivery_mode == "warehouse" or not draft.delivery_mode %}checked{% endif %}
+            >
+            <span>На вантажне відділення</span>
+          </label>
+          <label class="da-mode__option">
+            <input
+              type="radio"
+              name="delivery_mode"
+              value="doors"
+              {% if draft.delivery_mode == "doors" %}checked{% endif %}
+            >
+            <span>Адресна доставка (двері)</span>
+          </label>
+        </fieldset>
+
+        <label class="form-field">
+          <span class="label">Місто *</span>
+          <input type="search" id="da-city-q" placeholder="Почніть вводити місто" autocomplete="off" enterkeyhint="search">
+        </label>
+        <input type="hidden" name="delivery_city_id" id="da-city-id" value="{{ draft.delivery_city_id|default:'' }}">
+        <input type="hidden" name="delivery_city_name" id="da-city-name" value="{{ draft.delivery_city_name|default:'' }}">
+        <div id="da-city-results" class="np-results" role="listbox" aria-label="Міста Delivery"></div>
+        <p id="da-city-selected" class="np-selected">{% if draft.delivery_city_name %}Обрано: {{ draft.delivery_city_name }}{% endif %}</p>
+
+        <div id="da-warehouse-block">
+          <label class="form-field">
+            <span class="label">Вантажний склад *</span>
+            <input type="search" id="da-wh-q" placeholder="Пошук складу" autocomplete="off" enterkeyhint="search">
+          </label>
+          <input type="hidden" name="delivery_warehouse_id" id="da-wh-id" value="{{ draft.delivery_warehouse_id|default:'' }}">
+          <input type="hidden" name="delivery_warehouse_name" id="da-wh-name" value="{{ draft.delivery_warehouse_name|default:'' }}">
+          <div id="da-wh-results" class="np-results" role="listbox" aria-label="Склади Delivery"></div>
+          <p id="da-wh-selected" class="np-selected">{% if draft.delivery_warehouse_name %}Обрано: {{ draft.delivery_warehouse_name }}{% endif %}</p>
+        </div>
+
+        <div id="da-doors-block" hidden>
+          <label class="form-field">
+            <span class="label">Вулиця та будинок *</span>
+            <textarea
+              name="delivery_address"
+              id="da-address"
+              rows="2"
+              placeholder="напр. вул. Бориса Гмирі, 14"
+              autocomplete="street-address"
+              inputmode="text"
+              enterkeyhint="done"
+              aria-describedby="da-address-hint"
+            >{{ draft.delivery_address|default:'' }}</textarea>
+          </label>
+          <p id="da-address-hint" class="da-hint">
+            Введіть адресу вручну — Delivery не дає список вулиць для вибору.
+          </p>
+        </div>
+      </div>
+
+      <div id="np-fields" class="np-panel" hidden>
+        <label class="form-field">
+          <span class="label">Місто *</span>
+          <input type="search" id="np-city-q" placeholder="Почніть вводити місто" autocomplete="off">
+        </label>
+        <input type="hidden" name="np_city_ref" id="np-city-ref" value="{{ draft.np_city_ref|default:'' }}">
+        <input type="hidden" name="np_city_name" id="np-city-name" value="{{ draft.np_city_name|default:'' }}">
+        <div id="np-city-results" class="np-results" role="listbox" aria-label="Міста"></div>
+        <p id="np-city-selected" class="np-selected">{% if draft.np_city_name %}Обрано: {{ draft.np_city_name }}{% endif %}</p>
+
+        <label class="form-field">
+          <span class="label">Відділення *</span>
+          <input type="search" id="np-wh-q" placeholder="Пошук відділення" autocomplete="off">
+        </label>
+        <input type="hidden" name="np_warehouse_ref" id="np-wh-ref" value="{{ draft.np_warehouse_ref|default:'' }}">
+        <input type="hidden" name="np_warehouse_name" id="np-wh-name" value="{{ draft.np_warehouse_name|default:'' }}">
+        <div id="np-wh-results" class="np-results" role="listbox" aria-label="Відділення"></div>
+        <p id="np-wh-selected" class="np-selected">{% if draft.np_warehouse_name %}Обрано: {{ draft.np_warehouse_name }}{% endif %}</p>
+      </div>
+
+      <label class="form-field">
+        <span class="label">Коментар</span>
+        <textarea name="customer_comment" rows="3" placeholder="Додаткова інформація">{{ draft.customer_comment|default:'' }}</textarea>
+      </label>
+
+      <div class="checkout-nav">
+        <button class="btn btn--ghost" type="submit" name="action" value="back">← Назад</button>
+        <button class="btn" type="submit" name="action" value="next">
+          <span class="btn__label">Далі →</span>
+        </button>
+      </div>
+
+    {% else %}
+      <h2 class="checkout-card__title">Підтвердження замовлення</h2>
+      <dl class="checkout-summary">
+        <div class="checkout-summary__row">
+          <dt>Клієнт</dt>
+          <dd>{{ draft.customer_name }}</dd>
+        </div>
+        <div class="checkout-summary__row">
+          <dt>Телефон</dt>
+          <dd>{{ draft.customer_phone }}</dd>
+        </div>
+        {% if draft.customer_email %}
+          <div class="checkout-summary__row">
+            <dt>Email</dt>
+            <dd>{{ draft.customer_email }}</dd>
+          </div>
+        {% endif %}
+        {% if draft.customer_company %}
+          <div class="checkout-summary__row">
+            <dt>Компанія</dt>
+            <dd>{{ draft.customer_company }}</dd>
+          </div>
+        {% endif %}
+        <div class="checkout-summary__row">
+          <dt>Доставка</dt>
+          <dd>
+            {% if draft.shipping_method == "pickup" %}Самовивіз (склад){% endif %}
+            {% if draft.shipping_method == "delivery" %}
+              Delivery — {{ draft.delivery_city_name }}
+              {% if draft.delivery_mode == "warehouse" %}, {{ draft.delivery_warehouse_name }}{% endif %}
+              {% if draft.delivery_mode == "doors" %}, {{ draft.delivery_address }}{% endif %}
+            {% endif %}
+            {% if draft.shipping_method == "nova_poshta" %}Нова Пошта — {{ draft.np_city_name }}, {{ draft.np_warehouse_name }}{% endif %}
+          </dd>
+        </div>
+        {% if draft.customer_comment %}
+          <div class="checkout-summary__row">
+            <dt>Коментар</dt>
+            <dd>{{ draft.customer_comment }}</dd>
+          </div>
+        {% endif %}
+      </dl>
+
+      <div class="checkout-pay-note" role="note">
+        <p>Оплата: рахунок-фактура на email або готівка при отриманні. Менеджер звʼяжеться для уточнення.</p>
+      </div>
+
+      <fieldset class="pay-options">
+        <legend class="label">Спосіб оплати *</legend>
+        {% for value, label in payment_choices %}
+          <label class="pay-option">
+            <input
+              type="radio"
+              name="payment_method"
+              value="{{ value }}"
+              {% if draft.payment_method == value or not draft.payment_method and value == "invoice" %}checked{% endif %}
+              required
+            >
+            <span>{{ label }}</span>
+          </label>
+        {% endfor %}
+      </fieldset>
+
+      <div class="checkout-nav">
+        <button class="btn btn--ghost" type="submit" name="action" value="back">← Назад</button>
+        <button class="btn" type="submit" name="action" value="confirm">
+          <span class="btn__label">Підтвердити замовлення</span>
+        </button>
+      </div>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}
