@@ -28,6 +28,21 @@
     if (np) np.hidden = v !== "nova_poshta";
   }
 
+  function clearWarehouseUi(options) {
+    const opts = options || {};
+    if (whRef) whRef.value = "";
+    if (whName) whName.value = "";
+    if (whSelected) whSelected.textContent = "";
+    if (whResults) whResults.innerHTML = "";
+    if (whQ && !opts.keepQuery) whQ.value = "";
+  }
+
+  function clearCitySelection() {
+    if (cityRef) cityRef.value = "";
+    if (cityName) cityName.value = "";
+    if (citySelected) citySelected.textContent = "";
+  }
+
   methodInputs.forEach(function (input) {
     input.addEventListener("change", togglePanels);
   });
@@ -38,9 +53,21 @@
     cityQ.addEventListener("input", function () {
       clearTimeout(cityTimer);
       const q = cityQ.value.trim();
+      const selectedName = (cityName && cityName.value) || "";
+
+      // Редагування після вибору — скидаємо місто й відділення.
+      if (selectedName && q !== selectedName) {
+        clearCitySelection();
+        clearWarehouseUi();
+      }
+
       cityTimer = setTimeout(async function () {
         if (q.length < 2) {
           if (cityResults) cityResults.innerHTML = "";
+          if (!q) {
+            clearCitySelection();
+            clearWarehouseUi();
+          }
           return;
         }
         try {
@@ -81,13 +108,8 @@
       if (cityQ) cityQ.value = name;
       if (citySelected) citySelected.textContent = name ? "Обрано: " + name : "";
       cityResults.innerHTML = "";
-      if (whRef) whRef.value = "";
-      if (whName) whName.value = "";
-      if (whSelected) whSelected.textContent = "";
-      if (whQ) {
-        whQ.value = "";
-        whQ.focus();
-      }
+      clearWarehouseUi();
+      if (whQ) whQ.focus();
     });
   }
 
@@ -96,8 +118,21 @@
     whQ.addEventListener("input", function () {
       clearTimeout(whTimer);
       const q = whQ.value.trim();
+
+      // Скинули текст пошуку / обране відділення — ховаємо список.
+      if (whRef) whRef.value = "";
+      if (whName) whName.value = "";
+      if (whSelected) whSelected.textContent = "";
+
       whTimer = setTimeout(async function () {
-        if (!cityRef || !cityRef.value) return;
+        if (!cityRef || !cityRef.value) {
+          if (whResults) whResults.innerHTML = "";
+          return;
+        }
+        if (!q) {
+          if (whResults) whResults.innerHTML = "";
+          return;
+        }
         try {
           const res = await fetch(
             "/api/np/warehouses/?city=" +
