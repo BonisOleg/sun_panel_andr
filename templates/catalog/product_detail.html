@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}{{ product.name }} — {{ site_settings.site_name|default:"Soliron" }}{% endblock %}
+{% block title %}{% if product.seo_title %}{{ product.seo_title }}{% else %}{{ product.name }} — {{ site_settings.site_name|default:"Soliron" }}{% endif %}{% endblock %}
+{% block seo_meta %}
+{% if product_images %}
+{% include "partials/seo_meta.html" with seo_og_title=product.seo_title|default:product.name seo_description=product.seo_description|default:product.description|striptags|truncatechars:160 seo_og_type="product" seo_keywords=product.seo_keywords seo_og_image=product_images.0.image.url %}
+{% else %}
+{% include "partials/seo_meta.html" with seo_og_title=product.seo_title|default:product.name seo_description=product.seo_description|default:product.description|striptags|truncatechars:160 seo_og_type="product" seo_keywords=product.seo_keywords %}
+{% endif %}
+{% endblock %}
 {% block content %}
 <section class="product-page-section" data-product-page>
   <div class="container product-page-container">

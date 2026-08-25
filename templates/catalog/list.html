@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% load richtext_tags %}
-{% block title %}{% if is_search %}Пошук{% elif category %}{{ category.name }}{% else %}Каталог{% endif %} — {{ site_settings.site_name|default:"Soliron" }}{% endblock %}
+{% block title %}{% if is_search %}Пошук{% elif category %}{% if category.seo_title %}{{ category.seo_title }}{% else %}{{ category.name }}{% endif %}{% else %}Каталог{% endif %} — {{ site_settings.site_name|default:"Soliron" }}{% endblock %}
+{% block seo_meta %}
+{% if is_search %}
+{% include "partials/seo_meta.html" with seo_og_title="Пошук" seo_robots="noindex,follow" %}
+{% elif category %}
+{% include "partials/seo_meta.html" with seo_og_title=category.seo_title|default:category.name seo_description=category.seo_description|default:category.description|striptags|truncatechars:160 seo_keywords=category.seo_keywords %}
+{% else %}
+{% include "partials/seo_meta.html" with seo_og_title="Каталог" seo_description=seo_description %}
+{% endif %}
+{% endblock %}
 {% block content %}
 <div class="catalog-page">
   <div class="container section--tight">

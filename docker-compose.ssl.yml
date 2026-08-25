@@ -1,4 +1,4 @@
-# Overlay after certbot. Replace DOMAIN in deploy/nginx/docker.prod.conf first.
+# Overlay after certbot. Uses deploy/nginx/docker.prod.conf (soliron.com.ua).
 services:
   nginx:
     ports:

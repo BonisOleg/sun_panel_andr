@@ -4,15 +4,23 @@ from django.http import HttpResponse
 from django.templatetags.static import static
 
 from src.content.models import SiteSettings
+from src.seo.utils import absolute_url, public_base_url
 
 
-def robots_txt(_request):
+def robots_txt(request):
     settings = SiteSettings.load()
-    body = settings.robots_txt.strip() or (
-        "User-agent: *\n"
-        "Disallow: /admin/\n"
-        "Sitemap: /sitemap.xml\n"
-    )
+    body = settings.robots_txt.strip()
+    if not body:
+        sitemap = absolute_url("/sitemap.xml", request)
+        body = (
+            "User-agent: *\n"
+            "Disallow: /admin/\n"
+            "Disallow: /koshyk/\n"
+            "Disallow: /oformlennya/\n"
+            f"Sitemap: {sitemap}\n"
+        )
+    elif "Sitemap:" not in body and public_base_url(request):
+        body = body.rstrip() + f"\nSitemap: {absolute_url('/sitemap.xml', request)}\n"
     return HttpResponse(body, content_type="text/plain")
 
 

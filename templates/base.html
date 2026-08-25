@@ -4,7 +4,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>{% block title %}{{ site_settings.site_name|default:"Soliron" }}{% endblock %}</title>
+  <title>{% block title %}{{ seo_title|default:site_settings.site_name|default:"Soliron" }}{% endblock %}</title>
+  {% block seo_meta %}{% include "partials/seo_meta.html" %}{% endblock %}
   <meta name="theme-color" content="#6c5685">
   <link rel="icon" href="{% static 'images/favicon/favicon.ico' %}" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">

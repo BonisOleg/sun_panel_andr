@@ -95,6 +95,10 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Canonical public origin for robots/OG/canonical (no trailing slash).
+# Example: http://68.183.212.53 or https://soliron.com.ua
+PUBLIC_BASE_URL = config("PUBLIC_BASE_URL", default="").rstrip("/")
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
