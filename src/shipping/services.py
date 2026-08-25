@@ -8,6 +8,8 @@ from typing import Any
 import requests
 from django.conf import settings
 from django.db import transaction
+from django.db.models import Case, IntegerField, Value, When
+from django.db.models.functions import Length
 
 from .models import NPCity, NPWarehouse
 
@@ -20,12 +22,27 @@ class NovaPoshtaError(Exception):
 
 
 def search_cities(query: str, limit: int = 20) -> list[dict]:
+    """Пошук міст НП з локальної БД.
+
+    Пріоритет: точна назва → починається з запиту → містить;
+    далі коротші назви (Київ вище за «…(Київська обл.)»).
+    """
     query = (query or "").strip()
     if len(query) < 2:
         return []
-    qs = NPCity.objects.filter(is_active=True, name__icontains=query).order_by("name")[
-        :limit
-    ]
+    qs = (
+        NPCity.objects.filter(is_active=True, name__icontains=query)
+        .annotate(
+            match_rank=Case(
+                When(name__iexact=query, then=Value(0)),
+                When(name__istartswith=query, then=Value(1)),
+                default=Value(2),
+                output_field=IntegerField(),
+            ),
+            name_len=Length("name"),
+        )
+        .order_by("match_rank", "name_len", "name")[:limit]
+    )
     return [
         {"ref": c.ref, "name": c.name, "area": c.area}
         for c in qs
