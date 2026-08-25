@@ -344,7 +344,12 @@ def place_order(request) -> Order:
     cart.status = Cart.Status.CONVERTED
     cart.save(update_fields=["status", "updated_at"])
     clear_checkout_draft(request)
+    return order
 
+
+def place_order_and_notify(request) -> Order:
+    """Commit order, then notify (Telegram/Email) outside the DB transaction."""
+    order = place_order(request)
     channels = notify_order(order)
     update_fields: list[str] = []
     now = timezone.now()

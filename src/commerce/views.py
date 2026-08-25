@@ -155,7 +155,7 @@ class CheckoutView(View):
                 cleaned = services.validate_step3(request.POST)
                 draft.update(cleaned)
                 services.save_checkout_draft(request, draft)
-                order = services.place_order(request)
+                order = services.place_order_and_notify(request)
                 request.session["order_thanks"] = order.number
                 request.session.modified = True
                 return redirect("commerce:checkout")

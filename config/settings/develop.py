@@ -12,6 +12,7 @@ ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "testserver"]
 # Empty EMAIL_HOST → console. For Resend local test set EMAIL_* like production.
 _email_host = config("EMAIL_HOST", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@soliron.local")
+EMAIL_TIMEOUT = config("EMAIL_TIMEOUT", default=8, cast=int)
 if _email_host:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = _email_host

@@ -83,7 +83,7 @@ class ContactsView(View):
 
     def post(self, request):
         try:
-            services.create_contact_lead(
+            services.create_contact_lead_and_notify(
                 name=request.POST.get("name", ""),
                 phone=request.POST.get("phone", ""),
                 message=request.POST.get("message", ""),

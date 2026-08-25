@@ -142,6 +142,19 @@ def create_contact_lead(*, name: str, phone: str, message: str, email: str = "",
         message=cleaned["message"],
         source_url=(source_url or "")[:512],
     )
+    return lead
+
+
+def create_contact_lead_and_notify(
+    *, name: str, phone: str, message: str, email: str = "", source_url: str = ""
+) -> ContactLead:
+    lead = create_contact_lead(
+        name=name,
+        phone=phone,
+        message=message,
+        email=email,
+        source_url=source_url,
+    )
     channels = notify_lead(lead)
     update_fields: list[str] = []
     now = timezone.now()
