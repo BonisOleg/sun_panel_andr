@@ -56,7 +56,20 @@
       {% endwith %}
     </div>
     <div class="site-footer__bottom">
-      © {% now "Y" %} {{ site_settings.site_name|default:"Soliron" }}
+      <p class="site-footer__copy">© {% now "Y" %} {{ site_settings.site_name|default:"Soliron" }}</p>
+      <p class="site-footer__credit">
+        Сайт зроблено в
+        {% if request.resolver_match.url_name == "home" %}
+          <a
+            class="site-footer__credit-link"
+            href="https://www.prometeylabs.com/internet-shop-v2/"
+            target="_blank"
+            rel="nofollow noopener noreferrer"
+          >PrometeyLabs</a>
+        {% else %}
+          <span class="site-footer__credit-name">PrometeyLabs</span>
+        {% endif %}
+      </p>
     </div>
   </div>
 </footer>
