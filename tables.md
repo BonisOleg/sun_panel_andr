@@ -3,7 +3,7 @@
 **Версія:** 1.2 · **Дата:** 2026-08-04 · **Статус lock:** APPROVED + scaffold  
 **Джерела:** `Технічне_завдання_Голінковський.docx` · `solironsitemap.pdf` v1.1  
 **Регламент:** Prometey `ecommerce_db_schema_skill` + `ecommerce-db-schema-reference` + `novaposhta_skill`  
-**Стек:** Django 5+ · PostgreSQL · пакет `src.*` · UA only · HTMX · Email (без Telegram) · без онлайн-оплати
+**Стек:** Django 5+ · PostgreSQL · пакет `src.*` · UA only · HTMX · Email (Resend) + Telegram alerts · без онлайн-оплати
 
 ---
 
@@ -463,7 +463,7 @@ Legacy URL на старті немає — таблиця для майбутн
 | 3 | Підтвердження + інфо оплати | `payment_method` | ✅ |
 | 3 | БД + Email адміну | `order` + `notifications` | ✅ |
 | 3 | Блог WYSIWYG + cover | `blog_post` | ✅ |
-| 4.1 | Email only | `notify_email`, без Telegram | ✅ |
+| 4.1 | Email + Telegram | `notify_email` / NOTIFY_EMAIL + TELEGRAM_* | ✅ |
 | 4.2 | Без онлайн-оплати / без вартості НП | немає payments; shipping_uah немає | ✅ |
 | 5.1 | Зміни ≤1 хв на вітрині | кеш-інвалідація (код) | ✅ (код) |
 | 5.2 | Заявки в адмінці | `order` + `contact_lead` | ✅ |

@@ -124,7 +124,7 @@ place_order(session, checkout_draft) @atomic:
   4. створити Order(number, customer_*, shipping_*, payment_method, totals)
   5. OrderItem snapshot (name, sku, qty, unit_price, line_total)
   6. cart.status = converted; clear checkout session
-  7. notifications.send_order_email(order)  # поза atomic retry ок, але flag email_sent_at
+  7. notifications.notify_order(order)  # Email + Telegram; flags email_sent_at / telegram_sent_at
   8. повернути order → view рендерить екран подяки (той самий /oformlennya/)
 ```
 
@@ -181,20 +181,22 @@ Blog detail: slug + published else 404; body as safe HTML from TinyMCE
 Contacts GET: SiteSettings.load() → phones, email, address, map
 Contacts POST AJAX:
   validate name*, phone*, message* (email optional)
-  → ContactLead.create → send_lead_email → JSON/HTML «Дякуємо»
+  → ContactLead.create → notify_lead → JSON/HTML «Дякуємо»
   без full page reload (ТЗ §6.3)
 ```
 
 ### 2.6. `notifications`
 
 ```
-send_order_email(order):
-  to = SiteSettings.notify_email
-  body: товари, qty, суми, контакти, доставка (НП / Delivery склад|двері), коментар, payment_method
-send_lead_email(lead): аналогічно полям ЗЗ
+notify_order(order) / notify_lead(lead):
+  format_*_message() — спільний текст (SKU, qty, суми, контакти, доставка)
+  → Email (Resend SMTP через EMAIL_* / notify_email|NOTIFY_EMAIL)
+  → Telegram Bot API (TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID, один менеджер)
+  → EmailLog на кожен канал (channel=email|telegram)
+  Канали незалежні; фейл одного не валить checkout/форму.
 ```
 
-Лише Email. Лог `email_log` — опційно (див. tables.md §7).
+Прапорці: `Order.email_sent_at` / `telegram_sent_at`, те саме для `ContactLead`.
 
 ### 2.7. `seo`
 

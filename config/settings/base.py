@@ -232,6 +232,14 @@ UNFOLD = {
 
 NP_API_KEY = config("NP_API_KEY", default="")
 
+# Admin notify fallback if SiteSettings.notify_email is empty.
+NOTIFY_EMAIL = config("NOTIFY_EMAIL", default="")
+
+# Telegram admin alerts (one manager / one chat). Token never in git.
+TELEGRAM_BOT_TOKEN = config("TELEGRAM_BOT_TOKEN", default="")
+TELEGRAM_CHAT_ID = config("TELEGRAM_CHAT_ID", default="")
+TELEGRAM_API_TIMEOUT = config("TELEGRAM_API_TIMEOUT", default=5, cast=int)
+
 # Delivery Auto API v4 — публічні довідники без ключів; calc/ТТН потребують HMAC.
 DELIVERY_PUBLIC_KEY = config("DELIVERY_PUBLIC_KEY", default="")
 DELIVERY_SECRET_KEY = config("DELIVERY_SECRET_KEY", default="")

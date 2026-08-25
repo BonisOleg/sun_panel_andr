@@ -10,7 +10,7 @@ from django.db.models import Prefetch
 from django.utils import timezone
 
 from src.catalog.models import Product, ProductImage
-from src.notifications.services import send_order_email
+from src.notifications.services import notify_order
 
 from .models import Cart, CartItem, Order, OrderItem
 
@@ -345,8 +345,15 @@ def place_order(request) -> Order:
     cart.save(update_fields=["status", "updated_at"])
     clear_checkout_draft(request)
 
-    sent = send_order_email(order)
-    if sent:
-        order.email_sent_at = timezone.now()
-        order.save(update_fields=["email_sent_at"])
+    channels = notify_order(order)
+    update_fields: list[str] = []
+    now = timezone.now()
+    if channels.get("email"):
+        order.email_sent_at = now
+        update_fields.append("email_sent_at")
+    if channels.get("telegram"):
+        order.telegram_sent_at = now
+        update_fields.append("telegram_sent_at")
+    if update_fields:
+        order.save(update_fields=update_fields)
     return order

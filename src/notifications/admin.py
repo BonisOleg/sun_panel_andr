@@ -6,7 +6,7 @@ from .models import EmailLog
 
 @admin.register(EmailLog)
 class EmailLogAdmin(ModelAdmin):
-    list_display = ("kind", "to_email", "subject", "status", "created_at")
-    list_filter = ("kind", "status")
+    list_display = ("kind", "channel", "to_email", "subject", "status", "created_at")
+    list_filter = ("kind", "channel", "status")
     search_fields = ("to_email", "subject", "object_id")
     readonly_fields = ("created_at",)

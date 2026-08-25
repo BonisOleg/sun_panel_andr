@@ -160,7 +160,7 @@ class SiteSettings(TimeStampedModel):
         "Email адміністратора",
         blank=True,
         default="",
-        help_text="Листи про замовлення та зворотний звʼязок",
+        help_text="Листи про замовлення та ЗЗ (Resend). Fallback: env NOTIFY_EMAIL. Telegram — TELEGRAM_* у .env.",
     )
     gtm_container_id = models.CharField(max_length=32, blank=True, default="")
     ga4_measurement_id = models.CharField(max_length=32, blank=True, default="")
@@ -355,6 +355,7 @@ class ContactLead(CreatedAtModel):
     source_url = models.CharField(max_length=512, blank=True, default="")
     is_processed = models.BooleanField(default=False)
     email_sent_at = models.DateTimeField(null=True, blank=True)
+    telegram_sent_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "content_contact_lead"

@@ -138,6 +138,7 @@ class Order(TimeStampedModel):
         related_name="orders",
     )
     email_sent_at = models.DateTimeField(null=True, blank=True)
+    telegram_sent_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = "commerce_order"

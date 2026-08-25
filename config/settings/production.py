@@ -51,6 +51,8 @@ STORAGES = {
     },
 }
 
+# Resend SMTP: EMAIL_HOST=smtp.resend.com, EMAIL_HOST_USER=resend,
+# EMAIL_HOST_PASSWORD=<Resend API key>, DEFAULT_FROM_EMAIL=verified@domain
 _email_host = config("EMAIL_HOST", default="")
 DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="noreply@soliron.local")
 if _email_host:
@@ -60,5 +62,6 @@ if _email_host:
     EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
     EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
     EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+    EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"

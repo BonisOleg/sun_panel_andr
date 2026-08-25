@@ -10,7 +10,7 @@ from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from src.notifications.services import send_lead_email
+from src.notifications.services import notify_lead
 
 from .models import BlogPost, ContactLead, HomeAdvantage, HomePage
 
@@ -142,7 +142,15 @@ def create_contact_lead(*, name: str, phone: str, message: str, email: str = "",
         message=cleaned["message"],
         source_url=(source_url or "")[:512],
     )
-    if send_lead_email(lead):
-        lead.email_sent_at = timezone.now()
-        lead.save(update_fields=["email_sent_at"])
+    channels = notify_lead(lead)
+    update_fields: list[str] = []
+    now = timezone.now()
+    if channels.get("email"):
+        lead.email_sent_at = now
+        update_fields.append("email_sent_at")
+    if channels.get("telegram"):
+        lead.telegram_sent_at = now
+        update_fields.append("telegram_sent_at")
+    if update_fields:
+        lead.save(update_fields=update_fields)
     return lead
