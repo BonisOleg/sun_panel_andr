@@ -243,6 +243,8 @@ UNFOLD = {
 }
 
 NP_API_KEY = config("NP_API_KEY", default="")
+NP_API_DELAY = config("NP_API_DELAY", default=0.35, cast=float)
+NP_API_MAX_RETRIES = config("NP_API_MAX_RETRIES", default=6, cast=int)
 
 # Admin notify fallback if SiteSettings.notify_email is empty.
 NOTIFY_EMAIL = config("NOTIFY_EMAIL", default="")

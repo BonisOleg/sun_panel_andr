@@ -1,7 +1,12 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from src.shipping.models import NPCity
-from src.shipping.services import NovaPoshtaError, sync_cities, sync_warehouses_for_city
+from src.shipping.services import (
+    NovaPoshtaError,
+    sync_all_warehouses,
+    sync_cities,
+    sync_warehouses_for_city,
+)
 
 
 class Command(BaseCommand):
@@ -30,10 +35,7 @@ class Command(BaseCommand):
                 w = sync_warehouses_for_city(city)
                 self.stdout.write(self.style.SUCCESS(f"Відділення: {w}"))
             elif options["warehouses"]:
-                total = 0
-                for city in NPCity.objects.filter(is_active=True).iterator():
-                    total += sync_warehouses_for_city(city)
-                    self.stdout.write(f"  {city.name}: ok")
+                total = sync_all_warehouses()
                 self.stdout.write(self.style.SUCCESS(f"Відділення разом: {total}"))
         except NovaPoshtaError as exc:
             raise CommandError(str(exc)) from exc

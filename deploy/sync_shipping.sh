@@ -32,7 +32,7 @@ STAMP="$(date '+%Y-%m-%dT%H:%M:%S%z')"
   np_rc=$?
   set -e
   if [[ "$np_rc" -ne 0 ]]; then
-    echo "WARN: sync_novaposhta failed (exit ${np_rc}); перевірте NP_API_KEY"
+    echo "WARN: sync_novaposhta failed (exit ${np_rc}); див. лог вище"
   fi
 
   echo "===== $(date '+%Y-%m-%dT%H:%M:%S%z') shipping sync done ====="
