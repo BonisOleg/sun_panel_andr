@@ -223,6 +223,18 @@
   }
 }
 
+/*
+ * From 640px the grid is 2 columns; an odd last card leaves an empty cell
+ * where front-left/right (contain + card-like box) read as a third column.
+ * Keep those PNGs on 1-col mobile only; from 1024px 3 tracks fit.
+ */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .categories-clouds__layer--front-left,
+  .categories-clouds__layer--front-right {
+    display: none;
+  }
+}
+
 @media (max-width: 480px) {
   .categories-section {
     --cloud-bleed: 9rem;
