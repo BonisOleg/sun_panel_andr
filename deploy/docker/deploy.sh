@@ -20,22 +20,40 @@ free_host_ports() {
   fi
 }
 
+web_healthz_ok() {
+  # Перевіряємо gunicorn напряму (не через nginx 301 на HTTPS).
+  "${COMPOSE[@]}" exec -T web python -c \
+    "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz/', timeout=5)" \
+    >/dev/null 2>&1
+}
+
 free_host_ports
 
-echo "==> build + up"
-"${COMPOSE[@]}" up -d --build --remove-orphans || true
+# Під час recreate web nginx інакше віддає 502. Короткий downtime кращий за 502.
+echo "==> stop nginx (уникнути 502 під час рестарту web)"
+"${COMPOSE[@]}" stop nginx 2>/dev/null || true
 
-echo "==> wait healthz"
+echo "==> build + up db web cron"
+"${COMPOSE[@]}" up -d --build --remove-orphans db web cron || true
+
+echo "==> wait web /healthz/ (gunicorn)"
 ok=0
 for _ in $(seq 1 60); do
-  if curl -sf http://127.0.0.1/healthz/ >/dev/null 2>&1; then
+  if web_healthz_ok; then
     ok=1
     break
   fi
   sleep 3
 done
 
-"${COMPOSE[@]}" up -d --remove-orphans || true
+if [ "$ok" -ne 1 ]; then
+  echo "WARN: web /healthz/ not ready — logs:"
+  "${COMPOSE[@]}" logs --tail=40 web db cron
+  exit 1
+fi
+
+echo "==> start nginx (web уже healthy)"
+"${COMPOSE[@]}" up -d --remove-orphans nginx || true
 
 echo "==> inventory"
 missing=0
@@ -48,13 +66,7 @@ for svc in "${SERVICES[@]}"; do
   fi
 done
 
-if [ "$ok" -ne 1 ]; then
-  echo "WARN: /healthz/ not ready — logs:"
-  "${COMPOSE[@]}" logs --tail=40 web nginx db cron
-  exit 1
-fi
-
-echo "==> HTTP healthz OK"
+echo "==> web healthz OK"
 if [ "$missing" -ne 0 ]; then
   exit 1
 fi
