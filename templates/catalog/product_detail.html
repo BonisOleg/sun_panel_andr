@@ -8,6 +8,11 @@
 {% include "partials/seo_meta.html" with seo_og_title=product.seo_title|default:product.name seo_description=product.seo_description|default:product.description|striptags|truncatechars:160 seo_og_type="product" seo_keywords=product.seo_keywords %}
 {% endif %}
 {% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/pages/product-detail.css' %}?v={{ static_version }}">
+<link rel="stylesheet" href="{% static 'css/pages/product-detail-2.css' %}?v={{ static_version }}">
+<link rel="stylesheet" href="{% static 'css/pages/commerce.css' %}?v={{ static_version }}">
+{% endblock %}
 {% block content %}
 <section class="product-page-section" data-product-page>
   <div class="container product-page-container">

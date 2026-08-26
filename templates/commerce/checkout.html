@@ -4,6 +4,11 @@
 {% block seo_meta %}
 {% include "partials/seo_meta.html" with seo_og_title="Оформлення замовлення" seo_robots="noindex,nofollow" %}
 {% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/pages/commerce.css' %}?v={{ static_version }}">
+<link rel="stylesheet" href="{% static 'css/pages/commerce-2.css' %}?v={{ static_version }}">
+<link rel="stylesheet" href="{% static 'css/pages/commerce-3.css' %}?v={{ static_version }}">
+{% endblock %}
 {% block extra_js %}
 <script src="{% static 'js/checkout_contacts.js' %}" defer></script>
 <script src="{% static 'js/checkout_np.js' %}" defer></script>

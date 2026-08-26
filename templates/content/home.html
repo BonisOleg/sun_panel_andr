@@ -4,6 +4,12 @@
 {% block seo_meta %}
 {% include "partials/seo_meta.html" with seo_og_title="Soliron — сонячні панелі та кріплення" seo_description=home.lead|striptags|truncatechars:160|default:seo_description %}
 {% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v={{ static_version }}">
+<link rel="stylesheet" href="{% static 'css/pages/home-advantages.css' %}?v={{ static_version }}">
+<link rel="stylesheet" href="{% static 'css/pages/categories-home.css' %}?v={{ static_version }}">
+<link rel="stylesheet" href="{% static 'css/pages/categories-home-2.css' %}?v={{ static_version }}">
+{% endblock %}
 {% block content %}
 <section class="hero" id="hero" aria-labelledby="hero-title">
   <div class="container hero__inner">

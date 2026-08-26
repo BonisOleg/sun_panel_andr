@@ -24,19 +24,7 @@
   <link rel="stylesheet" href="{% static 'css/components/richtext.css' %}?v={{ static_version }}">
   <link rel="stylesheet" href="{% static 'css/components/header_search.css' %}?v={{ static_version }}">
   <link rel="stylesheet" href="{% static 'css/components/footer.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/home-advantages.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/shop.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/blog.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/product-detail.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/product-detail-2.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/categories-home.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/categories-home-2.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/catalog-section.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/catalog-section-2.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/commerce.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/commerce-2.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/pages/commerce-3.css' %}?v={{ static_version }}">
+  {# Page CSS — у {% block extra_head %} відповідних шаблонів (менше render-blocking) #}
   {# Без inline <style> від htmx — стилі індикаторів у components.css (CSP style-src) #}
   <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
   <script src="{% static 'js/htmx.min.js' %}" defer></script>

@@ -1,7 +1,11 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Дякуємо — {{ site_settings.site_name|default:"Soliron" }}{% endblock %}
 {% block seo_meta %}
 {% include "partials/seo_meta.html" with seo_og_title="Дякуємо" seo_robots="noindex,nofollow" %}
+{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/pages/commerce.css' %}?v={{ static_version }}">
 {% endblock %}
 {% block content %}
 <div class="container section">
