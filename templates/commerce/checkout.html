@@ -5,9 +5,8 @@
 {% include "partials/seo_meta.html" with seo_og_title="Оформлення замовлення" seo_robots="noindex,nofollow" %}
 {% endblock %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/pages/commerce.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/commerce-2.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/commerce-3.css' %}?v={{ static_version }}">
+{% load inline_static %}
+{% async_css "css/pages/commerce.css" "css/pages/commerce-2.css" "css/pages/commerce-3.css" %}
 {% endblock %}
 {% block extra_js %}
 <script src="{% static 'js/checkout_contacts.js' %}" defer></script>

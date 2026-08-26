@@ -9,9 +9,8 @@
 {% endif %}
 {% endblock %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/pages/product-detail.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/product-detail-2.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/commerce.css' %}?v={{ static_version }}">
+{% load inline_static %}
+{% async_css "css/pages/product-detail.css" "css/pages/product-detail-2.css" "css/pages/commerce.css" %}
 {% endblock %}
 {% block content %}
 <section class="product-page-section" data-product-page>

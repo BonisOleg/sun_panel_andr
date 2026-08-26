@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% load static richtext_tags %}
+{% load static richtext_tags inline_static %}
 {% block title %}{{ site_settings.site_name|default:"Soliron" }} — сонячні панелі та кріплення{% endblock %}
 {% block seo_meta %}
 {% include "partials/seo_meta.html" with seo_og_title="Soliron — сонячні панелі та кріплення" seo_description=home.lead|striptags|truncatechars:160|default:seo_description %}
 {% endblock %}
+{% block critical_css %}
+{% inline_static_css "css/pages/home.css" %}
+{% endblock %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/pages/home.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/home-advantages.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/categories-home.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/categories-home-2.css' %}?v={{ static_version }}">
+{% async_css "css/pages/home-advantages.css" "css/pages/categories-home.css" "css/pages/categories-home-2.css" %}
 {% endblock %}
 {% block content %}
 <section class="hero" id="hero" aria-labelledby="hero-title">

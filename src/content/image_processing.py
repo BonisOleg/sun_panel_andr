@@ -98,6 +98,52 @@ def center_crop_if_oversized(
         return ContentFile(buffer.getvalue(), name=out_name)
 
 
+CATEGORY_IMAGE_MAX_WIDTH = 912
+CATEGORY_IMAGE_MAX_HEIGHT = 608
+CATEGORY_WEBP_QUALITY = 80
+
+
+def optimize_image_to_webp(
+    source,
+    *,
+    max_width: int = CATEGORY_IMAGE_MAX_WIDTH,
+    max_height: int = CATEGORY_IMAGE_MAX_HEIGHT,
+    filename: str = "image.jpg",
+    quality: int = CATEGORY_WEBP_QUALITY,
+    force: bool = False,
+) -> ContentFile | None:
+    """
+    Resize (contain) if larger than max box, convert to WebP.
+    Returns None when already WebP and within limits (unless force=True).
+    """
+    source.seek(0)
+    with Image.open(source) as img:
+        img = ImageOps.exif_transpose(img)
+        width, height = img.size
+        ext = extension_of(filename)
+        needs_resize = width > max_width or height > max_height
+        needs_convert = ext != "webp"
+        if not force and not needs_resize and not needs_convert:
+            return None
+
+        if needs_resize:
+            img = img.copy()
+            img.thumbnail((max_width, max_height), Image.Resampling.LANCZOS)
+
+        if img.mode not in {"RGB", "RGBA"}:
+            img = img.convert("RGBA" if "A" in img.getbands() else "RGB")
+        elif img.mode == "RGBA":
+            pass
+        else:
+            img = img.convert("RGB")
+
+        buffer = io.BytesIO()
+        img.save(buffer, format="WEBP", quality=quality, method=6)
+        buffer.seek(0)
+        out_name = Path(filename).stem + ".webp"
+        return ContentFile(buffer.getvalue(), name=out_name)
+
+
 def process_uploaded_blog_image(uploaded: UploadedFile) -> ContentFile:
     """Валідує розширення та обрізає завелике зображення для TinyMCE / поля."""
     name = getattr(uploaded, "name", "") or "image.jpg"

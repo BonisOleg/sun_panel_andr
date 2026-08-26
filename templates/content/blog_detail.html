@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static richtext_tags %}
+{% load static richtext_tags inline_static %}
 {% block title %}{% if post.seo_title %}{{ post.seo_title }}{% else %}{{ post.title }} — {{ site_settings.site_name|default:"Soliron" }}{% endif %}{% endblock %}
 {% block seo_meta %}
 {% if post.cover_image %}
@@ -9,7 +9,7 @@
 {% endif %}
 {% endblock %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/pages/blog.css' %}?v={{ static_version }}">
+{% async_css "css/pages/blog.css" %}
 {% endblock %}
 {% block content %}
 <article class="container section--tight blog-article">

@@ -15,7 +15,7 @@
 | Views | thin: parse → selector/service → template/HTMX partial |
 | Ціна при checkout | **ревалідація з БД** у `place_order()`; `cart_item.unit_price_uah` — лише UI-кеш (SEC-02) |
 | Кошик | `session_key`; без User; ownership через session (SEC-01 guest) |
-| Auth | лише staff у `/admin/`; публічних кабінетів немає |
+| Auth | лише staff у `ADMIN_URL` (канон `/sol-cabin/`, не `/admin/`); публічних кабінетів немає |
 | SiteSettings | `.load()` / `get_or_create`, ніколи `.first()` (ERR-BIZ-07) |
 | Склад | у MVP **не** зменшуємо `stock` (немає `stock_qty`); блок «Купити» за `availability` |
 | «Купити» | дозволено при `in_stock` / `on_order` / `call` і при `price_uah IS NULL`; ні — лише `out_of_stock` |
@@ -52,7 +52,7 @@
 | `/sitemap.xml` | `seo.SitemapIndex` | published products/categories/posts + static |
 | `/robots.txt` | `seo.RobotsView` | `SiteSettings.robots_txt` або дефолт |
 | 404 / 500 | `core` templates | системні |
-| `/admin/` | Django admin | staff CRUD (ТЗ §5) |
+| `/sol-cabin/` (`ADMIN_URL`) | Django/Unfold admin | staff CRUD (ТЗ §5); ERR-132 |
 
 Службові HTMX (не в меню): cart badge partial, checkout step partials, blog «Показати ще».
 
@@ -201,7 +201,7 @@ notify_order(order) / notify_lead(lead):
 ### 2.7. `seo`
 
 - Sitemap: Category(is_active), Product(is_published), BlogPost(is_published), static `/` `/kontakty/` `/katalog/` `/blog/`
-- robots: `Disallow: /admin/`, `Sitemap: …`
+- robots: `Disallow: /sol-cabin/`, `Disallow: /admin/`, `Sitemap: …`
 - Resolve SEO: entity.seo_* або fallback title/name
 
 ### 2.8. Адмінка (ТЗ §5) — не окремі public controllers

@@ -43,12 +43,12 @@ def _site_logo_fieldset_description() -> str:
     logo_url = staticfiles_storage.url(DEFAULT_LOGO_STATIC)
     footer_url = staticfiles_storage.url(DEFAULT_LOGO_FOOTER_STATIC)
     return mark_safe(
-        "<p><strong>Рекомендований розмір:</strong> PNG "
-        "<strong>424×100 px</strong> (прозорий фон; @2x для висоти ~48&nbsp;px у шапці; "
-        "на мобільному ~40&nbsp;px; ширина в шапці до ~220&nbsp;px). "
-        "У футері оригінал показується у світлому варіанті (~36–44&nbsp;px).</p>"
-        "<p>Оригінали: <code>static/images/logo-soliron.png</code> (шапка) та "
-        "<code>static/images/logo-soliron-footer.png</code> (футер). "
+        "<p><strong>Рекомендований розмір:</strong> WebP/PNG "
+        "<strong>~320×75 px</strong> (прозорий фон; висота в шапці ~40–50&nbsp;px; "
+        "ширина до ~220&nbsp;px). "
+        "У футері дефолтний світлий варіант (~36–44&nbsp;px).</p>"
+        "<p>Оригінали: <code>static/images/logo-soliron.webp</code> (шапка) та "
+        "<code>static/images/logo-soliron-footer.webp</code> (футер). "
         "Після заміни поставте галочку «Повернути оригінальний логотип Soliron» "
         "і збережіть — знову покажуться ці варіанти.</p>"
         f'<p style="margin:0.75rem 0 0;display:flex;flex-wrap:wrap;gap:12px;align-items:center">'

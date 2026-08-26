@@ -1,9 +1,12 @@
 """catalog_* — tables.md §3.1–3.3."""
 
+from pathlib import Path
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 
+from src.content.image_processing import optimize_image_to_webp
 from src.core.models import CreatedAtModel, SeoFieldsMixin, TimeStampedModel
 from .text_utils import sanitize_product_name
 
@@ -60,6 +63,23 @@ class Category(TimeStampedModel, SeoFieldsMixin):
     @property
     def display_card_badge(self) -> str:
         return (self.card_badge_text or "").strip()
+
+    def save(self, *args, **kwargs):
+        self._process_image()
+        super().save(*args, **kwargs)
+
+    def _process_image(self, *, force: bool = False) -> None:
+        if not self.image:
+            return
+        try:
+            file_obj = self.image.file
+        except (FileNotFoundError, ValueError, OSError):
+            return
+        filename = Path(self.image.name).name or "category.jpg"
+        processed = optimize_image_to_webp(file_obj, filename=filename, force=force)
+        if processed is None:
+            return
+        self.image.save(processed.name, processed, save=False)
 
 
 class Product(TimeStampedModel, SeoFieldsMixin):

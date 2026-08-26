@@ -1,4 +1,4 @@
-{% load static %}
+{% load static inline_static %}
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -15,16 +15,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-  {# Direct links (not @import) so every file gets ?v= — otherwise imported CSS stays stale #}
-  <link rel="stylesheet" href="{% static 'css/tokens.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/reset.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/layout.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/components.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/components/custom-dropdown.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/components/richtext.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/components/header_search.css' %}?v={{ static_version }}">
-  <link rel="stylesheet" href="{% static 'css/components/footer.css' %}?v={{ static_version }}">
-  {# Page CSS — у {% block extra_head %} відповідних шаблонів (менше render-blocking) #}
+  {# Critical CSS inlined with CSP nonce — no render-blocking local CSS requests #}
+  <style nonce="{{ request.csp_nonce }}">
+    {% inline_static_css "css/tokens.css" "css/reset.css" "css/layout.css" "css/components.css" %}
+    {% block critical_css %}{% endblock %}
+  </style>
+  {% async_css "css/components/custom-dropdown.css" "css/components/richtext.css" "css/components/header_search.css" "css/components/footer.css" %}
+  <script src="{% static 'js/css-async.js' %}?v={{ static_version }}" defer></script>
   {# Без inline <style> від htmx — стилі індикаторів у components.css (CSP style-src) #}
   <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
   <script src="{% static 'js/htmx.min.js' %}" defer></script>

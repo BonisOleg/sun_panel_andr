@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from csp.constants import NONCE
 from decouple import Csv, config
 from django.templatetags.static import static
 
@@ -12,6 +13,13 @@ SECRET_KEY = config("SECRET_KEY")
 DEBUG = False
 
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="", cast=Csv())
+
+# ERR-132: never default /admin/ — scanners hit the standard prefix.
+_admin_path = config("ADMIN_URL", default="sol-cabin").strip().strip("/")
+if not _admin_path or _admin_path.lower() == "admin":
+    _admin_path = "sol-cabin"
+ADMIN_URL = f"{_admin_path}/"
+LOGIN_URL = "admin:login"
 
 INSTALLED_APPS = [
     "unfold",
@@ -108,7 +116,7 @@ CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": ("'self'",),
         "script-src": ("'self'",),
-        "style-src": ("'self'", "https://fonts.googleapis.com"),
+        "style-src": ("'self'", NONCE, "https://fonts.googleapis.com"),
         "style-src-attr": ("'unsafe-inline'",),
         "img-src": ("'self'", "data:", "blob:", "https:"),
         "font-src": ("'self'", "https://fonts.gstatic.com"),
@@ -124,7 +132,7 @@ CONTENT_SECURITY_POLICY = {
         "base-uri": ("'self'",),
         "form-action": ("'self'",),
     },
-    "EXCLUDE_URL_PREFIXES": ("/admin/",),
+    "EXCLUDE_URL_PREFIXES": (f"/{ADMIN_URL}",),
 }
 
 # Повний тулбар «як у WordPress/Joomla» — admin_skill (Prometey vault)

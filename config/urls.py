@@ -5,7 +5,7 @@ from django.urls import include, path
 
 urlpatterns = [
     path("tinymce/", include("tinymce.urls")),
-    path("admin/", admin.site.urls),
+    path(settings.ADMIN_URL, admin.site.urls),
     path("healthz/", include("src.core.urls_health")),
     path("", include("src.seo.urls")),
     path("", include("src.shipping.urls")),

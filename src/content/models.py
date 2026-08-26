@@ -20,15 +20,15 @@ from src.core.richtext import sanitize_richtext
 from src.content.models_2 import HomePage  # noqa: F401
 
 # Оригінали у static; у шапці/футері — якщо logo порожній.
-DEFAULT_LOGO_STATIC = "images/logo-soliron.png"
-DEFAULT_LOGO_FOOTER_STATIC = "images/logo-soliron-footer.png"
+DEFAULT_LOGO_STATIC = "images/logo-soliron.webp"
+DEFAULT_LOGO_FOOTER_STATIC = "images/logo-soliron-footer.webp"
 DEFAULT_LOGO_HELP = (
-    "Логотип у шапці (PNG з прозорим фоном). "
-    "Рекомендований розмір файлу: 424×100 px (@2x для висоти ~48 px у десктоп-шапці; "
-    "на мобільному CSS показує ~40 px). Ширина в шапці до ~220 px. "
-    "Оригінал для шапки: static/images/logo-soliron.png; "
-    "світлий для футера: static/images/logo-soliron-footer.png. "
-    "Щоб повернути оригінал після заміни — очистіть поле (галочка «Повернути оригінальний логотип») і збережіть."
+    "Логотип у шапці (WebP/PNG з прозорим фоном). "
+    "Рекомендований розмір файлу: ~320×75 px (достатньо для ретини в шапці). "
+    "Оригінал для шапки: static/images/logo-soliron.webp; "
+    "світлий для футера: static/images/logo-soliron-footer.webp. "
+    "Щоб повернути оригінал після заміни — очистіть поле "
+    "(галочка «Повернути оригінальний логотип») і збережіть."
 )
 
 

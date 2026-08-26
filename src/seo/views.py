@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings as django_settings
 from django.http import HttpResponse
 from django.templatetags.static import static
 
@@ -12,8 +13,10 @@ def robots_txt(request):
     body = settings.robots_txt.strip()
     if not body:
         sitemap = absolute_url("/sitemap.xml", request)
+        admin_prefix = f"/{django_settings.ADMIN_URL.lstrip('/')}"
         body = (
             "User-agent: *\n"
+            f"Disallow: {admin_prefix}\n"
             "Disallow: /admin/\n"
             "Disallow: /koshyk/\n"
             "Disallow: /oformlennya/\n"

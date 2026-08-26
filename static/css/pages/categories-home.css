@@ -131,7 +131,7 @@
   bottom: -18%;
   width: min(58vw, 34rem);
   height: min(48vw, 26rem);
-  background-image: url("../../images/clouds/cloud-front-left.png");
+  background-image: url("../../images/clouds/cloud-front-left.webp");
   background-position: left bottom;
   background-size: contain;
   filter: drop-shadow(0 12px 28px rgb(40 80 120 / 0.12));
@@ -145,7 +145,7 @@
   bottom: -20%;
   width: min(62vw, 36rem);
   height: min(50vw, 28rem);
-  background-image: url("../../images/clouds/cloud-front-right.png");
+  background-image: url("../../images/clouds/cloud-front-right.webp");
   background-position: right bottom;
   background-size: contain;
   filter: drop-shadow(0 12px 28px rgb(40 80 120 / 0.12));
@@ -159,7 +159,7 @@
   right: -5%;
   bottom: -22%;
   height: min(42vw, 22rem);
-  background-image: url("../../images/clouds/cloud-front-sheet.png");
+  background-image: url("../../images/clouds/cloud-front-sheet.webp");
   background-position: center bottom;
   background-size: cover;
   -webkit-transition-delay: 0.18s;

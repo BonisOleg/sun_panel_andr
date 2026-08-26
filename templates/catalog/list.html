@@ -11,11 +11,8 @@
 {% endif %}
 {% endblock %}
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/pages/shop.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/catalog-section.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/catalog-section-2.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/blog.css' %}?v={{ static_version }}">
-<link rel="stylesheet" href="{% static 'css/pages/commerce.css' %}?v={{ static_version }}">
+{% load inline_static %}
+{% async_css "css/pages/shop.css" "css/pages/catalog-section.css" "css/pages/catalog-section-2.css" "css/pages/blog.css" "css/pages/commerce.css" %}
 {% endblock %}
 {% block content %}
 <div class="catalog-page">
