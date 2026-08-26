@@ -7,7 +7,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 ARG TARGETARCH=amd64
-ARG SUPERCRONIC_VERSION=v0.2.33
+ARG SUPERCRONIC_VERSION=v0.2.36
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev gcc curl ca-certificates \
