@@ -57,7 +57,7 @@
   display: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .btn.site-header__cta {
     display: inline-flex;
   }

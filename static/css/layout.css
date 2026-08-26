@@ -352,63 +352,6 @@
   .btn-header__label {
     display: none;
   }
-
-  .btn.site-header__cta,
-  .site-header__cta {
-    display: inline-flex;
-  }
-
-  .site-header__toggle {
-    display: none;
-  }
-
-  .site-nav {
-    position: static;
-    z-index: auto;
-    display: flex;
-    flex: 1 1 auto;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-3);
-    min-width: 0;
-    margin-inline: var(--space-2);
-    padding: 0;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-    max-height: none;
-    overflow: visible;
-    visibility: visible;
-    opacity: 1;
-    transform: none;
-    clip-path: none;
-    pointer-events: auto;
-    transition: none;
-  }
-
-  .site-nav__links {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 0.15rem;
-  }
-
-  .site-nav__links > .site-nav__link,
-  .site-header.is-nav-shown .site-nav__links > .site-nav__link {
-    opacity: 1;
-    transform: none;
-    transition:
-      color var(--dur) var(--ease),
-      background var(--dur) var(--ease);
-    transition-delay: 0s;
-  }
-
-  .site-nav__link {
-    min-height: auto;
-    padding: 0.3rem 0.5rem;
-    font-size: var(--fs-sm);
-    white-space: nowrap;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -447,17 +390,61 @@
     display: inline;
   }
 
+  .btn.site-header__cta,
+  .site-header__cta {
+    display: inline-flex;
+  }
+
+  .site-header__toggle {
+    display: none;
+  }
+
   .site-nav {
+    position: static;
+    z-index: auto;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
     gap: var(--space-4);
+    min-width: 0;
+    margin-inline: var(--space-2);
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    max-height: none;
+    overflow: visible;
+    visibility: visible;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    pointer-events: auto;
+    transition: none;
   }
 
   .site-nav__links {
+    flex-direction: row;
+    flex-wrap: nowrap;
     gap: var(--space-2);
   }
 
+  .site-nav__links > .site-nav__link,
+  .site-header.is-nav-shown .site-nav__links > .site-nav__link {
+    opacity: 1;
+    transform: none;
+    transition:
+      color var(--dur) var(--ease),
+      background var(--dur) var(--ease);
+    transition-delay: 0s;
+  }
+
   .site-nav__link {
+    min-height: auto;
     padding: 0.35rem 0.65rem;
     font-size: inherit;
+    white-space: nowrap;
   }
 
   .site-nav__search {

@@ -6,7 +6,7 @@
   const searchInput = searchRoot
     ? searchRoot.querySelector(".header-search__input")
     : null;
-  const mobileMq = window.matchMedia("(max-width: 767px)");
+  const mobileMq = window.matchMedia("(max-width: 1023px)");
   const reduceMotionMq = window.matchMedia("(prefers-reduced-motion: reduce)");
   const NAV_ANIM_MS = 480;
   let navScrollY = 0;
