@@ -112,3 +112,12 @@ class ContactsView(View):
         if _htmx(request):
             return render(request, "content/partials/contact_thanks.html")
         return render(request, self.template_name, {"success": True, "errors": {}, "form": {}})
+
+
+class ContentPageDetailView(DetailView):
+    template_name = "content/page_detail.html"
+    context_object_name = "page"
+    slug_url_kwarg = "slug"
+
+    def get_queryset(self):
+        return services.published_info_pages()

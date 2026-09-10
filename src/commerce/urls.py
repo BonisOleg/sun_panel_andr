@@ -18,4 +18,5 @@ urlpatterns = [
         name="cart_remove",
     ),
     path("oformlennya/", views.CheckoutView.as_view(), name="checkout"),
+    path("dyakyemo/", views.OrderThanksView.as_view(), name="thanks"),
 ]

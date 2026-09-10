@@ -2,7 +2,7 @@ from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
 from src.catalog.models import Category, Product
-from src.content.models import BlogPost
+from src.content.models import BlogPost, ContentPage
 
 
 class StaticSitemap(Sitemap):
@@ -60,9 +60,24 @@ class BlogSitemap(Sitemap):
         return reverse("content:blog_detail", kwargs={"slug": obj.slug})
 
 
+class ContentPageSitemap(Sitemap):
+    changefreq = "monthly"
+    priority = 0.4
+
+    def items(self):
+        return ContentPage.objects.filter(is_published=True)
+
+    def lastmod(self, obj):
+        return obj.updated_at
+
+    def location(self, obj):
+        return reverse("content:page", kwargs={"slug": obj.slug})
+
+
 sitemaps = {
     "static": StaticSitemap,
     "categories": CategorySitemap,
     "products": ProductSitemap,
     "blog": BlogSitemap,
+    "pages": ContentPageSitemap,
 }

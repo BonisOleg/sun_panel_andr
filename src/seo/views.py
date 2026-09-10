@@ -20,6 +20,7 @@ def robots_txt(request):
             "Disallow: /admin/\n"
             "Disallow: /koshyk/\n"
             "Disallow: /oformlennya/\n"
+            "Disallow: /dyakyemo/\n"
             f"Sitemap: {sitemap}\n"
         )
     elif "Sitemap:" not in body and public_base_url(request):

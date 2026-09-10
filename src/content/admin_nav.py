@@ -25,6 +25,11 @@ def build_navigation(request=None):
                     "link": reverse_lazy("admin:content_blogpost_changelist"),
                 },
                 {
+                    "title": "Інфо-сторінки",
+                    "icon": "description",
+                    "link": reverse_lazy("admin:content_contentpage_changelist"),
+                },
+                {
                     "title": "Налаштування / контакти",
                     "icon": "settings",
                     "link": reverse_lazy("admin:content_sitesettings_changelist"),

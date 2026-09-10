@@ -16,4 +16,5 @@ urlpatterns = [
     path("blog/", views.BlogListView.as_view(), name="blog_list"),
     path("blog/<slug:slug>/", views.BlogDetailView.as_view(), name="blog_detail"),
     path("kontakty/", views.ContactsView.as_view(), name="contacts"),
+    path("<slug:slug>/", views.ContentPageDetailView.as_view(), name="page"),
 ]

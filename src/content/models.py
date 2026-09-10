@@ -18,6 +18,7 @@ from src.core.models import CreatedAtModel, SeoFieldsMixin, TimeStampedModel
 from src.core.richtext import sanitize_richtext
 
 from src.content.models_2 import HomePage  # noqa: F401
+from src.content.models_pages import ContentPage  # noqa: F401
 
 # Оригінали у static; у шапці/футері — якщо logo порожній.
 DEFAULT_LOGO_STATIC = "images/logo-soliron.webp"

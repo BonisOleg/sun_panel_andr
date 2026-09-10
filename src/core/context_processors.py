@@ -18,6 +18,7 @@ def _static_asset_version() -> int:
 
 def site_context(request):
     from src.content.models import SiteSettings
+    from src.content.services import published_info_pages
     from src.commerce.selectors import cart_items_count
     from src.seo.utils import absolute_url, meta_text, public_base_url
 
@@ -30,6 +31,7 @@ def site_context(request):
     path = request.path if request is not None else "/"
     return {
         "site_settings": settings_obj,
+        "info_pages": list(published_info_pages()),
         "cart_count": cart_items_count(request),
         "static_version": _static_asset_version(),
         "public_base_url": public_base_url(request),

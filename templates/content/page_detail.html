@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static richtext_tags inline_static %}
+{% block title %}{% if page.seo_title %}{{ page.seo_title }}{% else %}{{ page.title }} — {{ site_settings.site_name|default:"Soliron" }}{% endif %}{% endblock %}
+{% block seo_meta %}
+{% include "partials/seo_meta.html" with seo_og_title=page.seo_title|default:page.title seo_description=page.seo_description|default:page.body|striptags|truncatechars:160 seo_keywords=page.seo_keywords %}
+{% endblock %}
+{% block extra_head %}
+{% async_css "css/pages/blog.css" %}
+{% endblock %}
+{% block content %}
+<article class="container section--tight blog-article">
+  <nav class="breadcrumbs" aria-label="Навігаційний ланцюжок">
+    <a href="{% url 'core:home' %}">Головна</a>
+    <span>/</span>
+    <span>{{ page.title }}</span>
+  </nav>
+
+  <header class="page-head">
+    <h1>{{ page.title }}</h1>
+  </header>
+
+  <div class="blog-article__body surface richtext">
+    {{ page.body|richtext }}
+  </div>
+</article>
+{% endblock %}

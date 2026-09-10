@@ -16,6 +16,7 @@ from .models import (
     DEFAULT_LOGO_STATIC,
     BlogPost,
     ContactLead,
+    ContentPage,
     HomeAdvantage,
     HomeBanner,
     HomePage,
@@ -428,6 +429,54 @@ class BlogPostAdmin(TinyMCEAdminMixin, ModelAdmin):
     @admin.display(boolean=True, description="Обкладинка")
     def has_cover(self, obj):
         return bool(obj.cover_image)
+
+
+@admin.register(ContentPage)
+class ContentPageAdmin(TinyMCEAdminMixin, ModelAdmin):
+    tinymce_fields = ("body",)
+    list_display = ("title", "slug", "is_published", "sort_order", "updated_at")
+    list_editable = ("is_published", "sort_order")
+    list_filter = ("is_published",)
+    search_fields = ("title", "slug", "body")
+    prepopulated_fields = {"slug": ("title",)}
+    ordering = ("sort_order", "title")
+    readonly_fields = ("created_at", "updated_at")
+    fieldsets = (
+        (
+            "Сторінка",
+            {
+                "description": (
+                    "Slug лише латиницею (ЧПУ). Для Ads уже засіяні: "
+                    "oplata-i-dostavka, povernennya-ta-obmin, "
+                    "publichnyy-dohovir, polityka-konfidentsiynosti."
+                ),
+                "fields": ("title", "slug", "body"),
+            },
+        ),
+        (
+            "Публікація",
+            {"fields": ("is_published", "sort_order")},
+        ),
+        (
+            "SEO",
+            {
+                "classes": ("collapse",),
+                "fields": ("seo_title", "seo_description", "seo_keywords"),
+            },
+        ),
+        (
+            "Службове",
+            {
+                "classes": ("collapse",),
+                "fields": ("created_at", "updated_at"),
+            },
+        ),
+    )
+
+    def save_model(self, request, obj, form, change):
+        if obj.body:
+            obj.body = sanitize_richtext(obj.body)
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(ContactLead)

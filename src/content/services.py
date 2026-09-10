@@ -12,7 +12,7 @@ from django.utils import timezone
 
 from src.notifications.services import notify_lead
 
-from .models import BlogPost, ContactLead, HomeAdvantage, HomePage
+from .models import BlogPost, ContactLead, ContentPage, HomeAdvantage, HomePage
 
 
 class LeadError(Exception):
@@ -50,6 +50,14 @@ def published_posts() -> QuerySet[BlogPost]:
         published_at__isnull=False,
         published_at__lte=now,
     ).order_by("-published_at", "-id")
+
+
+def published_info_pages() -> QuerySet[ContentPage]:
+    return ContentPage.objects.filter(is_published=True).order_by("sort_order", "title")
+
+
+def get_published_page(slug: str) -> ContentPage:
+    return get_object_or_404(ContentPage, slug=slug, is_published=True)
 
 
 def get_published_post(slug: str) -> BlogPost:

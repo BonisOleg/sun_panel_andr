@@ -97,18 +97,24 @@ class CartRemoveView(View):
         return redirect("commerce:cart")
 
 
+class OrderThanksView(View):
+    """Подяка після замовлення: номер лише з сесії, без pop — F5 стабільний."""
+
+    def get(self, request):
+        number = request.session.get("order_thanks")
+        if not number:
+            return redirect("catalog:list")
+        return render(
+            request,
+            "commerce/thanks.html",
+            {"order_number": number},
+        )
+
+
 class CheckoutView(View):
     template_name = "commerce/checkout.html"
 
     def get(self, request):
-        if request.session.get("order_thanks"):
-            number = request.session.pop("order_thanks")
-            request.session.modified = True
-            return render(
-                request,
-                "commerce/thanks.html",
-                {"order_number": number},
-            )
         cart = services.get_or_create_cart(request)
         items = list(services.cart_items_qs(cart))
         if not items:
@@ -158,7 +164,7 @@ class CheckoutView(View):
                 order = services.place_order_and_notify(request)
                 request.session["order_thanks"] = order.number
                 request.session.modified = True
-                return redirect("commerce:checkout")
+                return redirect("commerce:thanks")
         except services.CheckoutError as exc:
             payload = exc.args[0] if exc.args else {"__all__": str(exc)}
             errors = payload if isinstance(payload, dict) else {"__all__": str(payload)}
