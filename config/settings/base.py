@@ -115,14 +115,30 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 14
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": ("'self'",),
-        "script-src": ("'self'",),
+        # NONCE — inline GTM bootstrap; googletagmanager/analytics — контейнер і теги
+        "script-src": (
+            "'self'",
+            NONCE,
+            "https://www.googletagmanager.com",
+            "https://www.google-analytics.com",
+            "https://ssl.google-analytics.com",
+            "https://tagmanager.google.com",
+        ),
         "style-src": ("'self'", NONCE, "https://fonts.googleapis.com"),
         "style-src-attr": ("'unsafe-inline'",),
         "img-src": ("'self'", "data:", "blob:", "https:"),
         "font-src": ("'self'", "https://fonts.gstatic.com"),
-        "connect-src": ("'self'",),
+        "connect-src": (
+            "'self'",
+            "https://www.googletagmanager.com",
+            "https://www.google-analytics.com",
+            "https://analytics.google.com",
+            "https://region1.google-analytics.com",
+            "https://stats.g.doubleclick.net",
+        ),
         "frame-src": (
             "'self'",
+            "https://www.googletagmanager.com",
             "https://www.google.com",
             "https://maps.google.com",
             "https://www.google.com.ua",

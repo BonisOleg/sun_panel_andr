@@ -15,4 +15,10 @@ urlpatterns = [
         GoogleMerchantFeedView.as_view(),
         name="google_merchant_feed",
     ),
+    # Alias під формат реклами (як droproom.com.ua/feeds/google.xml)
+    path(
+        "feeds/google.xml",
+        GoogleMerchantFeedView.as_view(),
+        name="google_feed",
+    ),
 ]

@@ -52,7 +52,7 @@ def _g_el(parent: ET.Element, tag: str, text: str) -> ET.Element:
 
 
 class GoogleMerchantFeedView(View):
-    """GET /feeds/google-merchant.xml — published products with price_uah."""
+    """GET /feeds/google.xml і /feeds/google-merchant.xml — published + price_uah."""
 
     def get(self, request):
         ET.register_namespace("g", _G_NS)
