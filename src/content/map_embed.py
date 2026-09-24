@@ -14,19 +14,23 @@ _SRC_ONLY_RE = re.compile(
 )
 
 
+def _compact_url(url: str) -> str:
+    return re.sub(r"\s+", "", url or "")
+
+
 def normalize_map_embed(value: str) -> str:
-    """Return iframe `src` URL. Accepts full Google «Вставити карту» HTML or URL."""
+    """Return iframe src. Accepts Google embed HTML or a maps URL, even with line breaks."""
     raw = (value or "").strip()
     if not raw:
         return ""
     if "<iframe" in raw.lower():
         match = _IFRAME_SRC_RE.search(raw)
-        if match:
-            return match.group(1).strip()
+        url = _compact_url(match.group(1)) if match else ""
+    elif raw.lower().startswith(("http://", "https://")):
+        url = _compact_url(raw)
+    else:
         return ""
-    if raw.startswith(("http://", "https://")):
-        return raw
-    return raw
+    return url if is_plausible_map_src(url) else ""
 
 
 def is_plausible_map_src(url: str) -> bool:

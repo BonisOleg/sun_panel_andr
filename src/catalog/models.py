@@ -134,7 +134,7 @@ class Product(TimeStampedModel, SeoFieldsMixin):
         default=CardBadgeStyle.STOCK,
         blank=True,
     )
-    sku = models.CharField("SKU", max_length=64, blank=True, default="")
+    sku = models.CharField("SKU", max_length=64)
     weight_kg = models.DecimalField(
         "Вага, кг",
         max_digits=8,
@@ -162,6 +162,10 @@ class Product(TimeStampedModel, SeoFieldsMixin):
                 condition=Q(price_uah__isnull=True) | Q(price_uah__gte=0),
                 name="catalog_product_price_uah_nonneg",
             ),
+            models.CheckConstraint(
+                condition=~Q(sku=""),
+                name="catalog_product_sku_not_blank",
+            ),
             models.UniqueConstraint(
                 fields=["sku"],
                 condition=~Q(sku=""),
@@ -175,12 +179,16 @@ class Product(TimeStampedModel, SeoFieldsMixin):
     def clean(self) -> None:
         if self.price_uah is not None and self.price_uah < 0:
             raise ValidationError({"price_uah": "Ціна не може бути відʼємною"})
+        self.sku = (self.sku or "").strip()
+        if not self.sku:
+            raise ValidationError({"sku": "Вкажіть артикул"})
         if self.name:
             self.name = sanitize_product_name(self.name)
 
     def save(self, *args, **kwargs):
         if self.name:
             self.name = sanitize_product_name(self.name)
+        self.sku = (self.sku or "").strip()
         super().save(*args, **kwargs)
 
     @property

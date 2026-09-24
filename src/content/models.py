@@ -60,8 +60,7 @@ class SiteSettings(TimeStampedModel):
         blank=True,
         default="",
         help_text=(
-            "Клікніть у велике поле нижче і вставте (Cmd+V) код з Google Maps. "
-            "Підходить весь блок <iframe …></iframe> або лише посилання з src=…. "
+            "Вставте код карти або посилання з src. "
             "Після збереження карта зʼявиться на сторінці «Контакти»."
         ),
     )

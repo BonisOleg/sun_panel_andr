@@ -1,12 +1,20 @@
-from django.contrib import admin
+from django import forms
+from django.contrib import admin, messages
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
+from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
+from unfold.decorators import action
+from unfold.enums import ActionVariant
 
 from src.core.admin_mixins import TinyMCEAdminMixin
 from src.core.admin_widgets import ClearableImageInput
 from src.core.richtext import sanitize_richtext
 
 from .models import Category, Product, ProductImage
+from .services import copy_product_images, product_duplicate_initial
 
 
 class ProductImageInline(TabularInline):
@@ -78,9 +86,27 @@ class CategoryAdmin(TinyMCEAdminMixin, ModelAdmin):
         )
 
 
+class ProductAddForm(forms.ModelForm):
+    duplicate_from = forms.IntegerField(required=False, widget=forms.HiddenInput)
+
+    class Meta:
+        model = Product
+        fields = "__all__"
+
+    def clean_duplicate_from(self):
+        source_id = self.cleaned_data.get("duplicate_from")
+        if not source_id:
+            return None
+        if not Product.objects.filter(pk=source_id).exists():
+            raise forms.ValidationError("Товар для дублювання не знайдено.")
+        return source_id
+
+
 @admin.register(Product)
 class ProductAdmin(TinyMCEAdminMixin, ModelAdmin):
     tinymce_fields = ("description",)
+    actions_detail = ["duplicate_product"]
+    actions_row = ["duplicate_product_row"]
     list_display = (
         "name",
         "sku",
@@ -114,6 +140,103 @@ class ProductAdmin(TinyMCEAdminMixin, ModelAdmin):
         ("Статус", {"fields": ("is_published", "sort_order")}),
         ("SEO", {"fields": ("seo_title", "seo_description", "seo_keywords"), "classes": ("collapse",)}),
     )
+
+    def get_form(self, request, obj=None, **kwargs):
+        if obj is None:
+            kwargs["form"] = ProductAddForm
+        return super().get_form(request, obj, **kwargs)
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super().get_fieldsets(request, obj)
+        if obj is not None:
+            return fieldsets
+        first_name, first_opts = fieldsets[0]
+        first_opts = {**first_opts, "fields": ("duplicate_from", *first_opts["fields"])}
+        return ((first_name, first_opts), *fieldsets[1:])
+
+    def get_changeform_initial_data(self, request):
+        initial = super().get_changeform_initial_data(request)
+        source = self._duplicate_source(request.GET.get("duplicate_from"))
+        if source is None:
+            return initial
+        initial.update(product_duplicate_initial(source))
+        return initial
+
+    def add_view(self, request, form_url="", extra_context=None):
+        if request.method == "GET" and request.GET.get("duplicate_from"):
+            source = self._duplicate_source(request.GET.get("duplicate_from"))
+            if source is None:
+                self.message_user(
+                    request,
+                    "Товар для дублювання не знайдено.",
+                    level=messages.ERROR,
+                )
+            else:
+                self.message_user(
+                    request,
+                    f"Копія «{source.name}». Заповніть назву, slug і артикул. "
+                    "Фото скопіюються після збереження.",
+                    level=messages.INFO,
+                )
+        return super().add_view(request, form_url, extra_context)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        if change:
+            return
+        source_id = form.cleaned_data.get("duplicate_from")
+        source = self._duplicate_source(source_id)
+        if source is None:
+            return
+        copied, skipped = copy_product_images(source, form.instance)
+        if copied:
+            self.message_user(
+                request,
+                f"Скопійовано фото: {copied}.",
+                level=messages.SUCCESS,
+            )
+        if skipped:
+            self.message_user(
+                request,
+                f"Не вдалося скопіювати фото: {skipped}. Файли відсутні на диску.",
+                level=messages.WARNING,
+            )
+
+    @action(
+        description="Дублювати",
+        url_path="duplicate",
+        icon="content_copy",
+        variant=ActionVariant.PRIMARY,
+    )
+    def duplicate_product(self, request, object_id):
+        return self._duplicate_redirect(request, object_id)
+
+    @action(
+        description="Дублювати",
+        url_path="duplicate-row",
+        icon="content_copy",
+    )
+    def duplicate_product_row(self, request, object_id):
+        return self._duplicate_redirect(request, object_id)
+
+    def _duplicate_redirect(self, request, object_id):
+        if not self.has_add_permission(request):
+            raise PermissionDenied
+        source = self.get_object(request, object_id)
+        if source is None:
+            raise Http404("Товар не знайдено")
+        url = reverse("admin:catalog_product_add")
+        return redirect(f"{url}?duplicate_from={source.pk}")
+
+    @staticmethod
+    def _duplicate_source(raw_id):
+        if raw_id in (None, ""):
+            return None
+        try:
+            source_id = int(raw_id)
+        except (TypeError, ValueError):
+            return None
+        return Product.objects.filter(pk=source_id).first()
 
     def save_model(self, request, obj, form, change):
         if obj.description:

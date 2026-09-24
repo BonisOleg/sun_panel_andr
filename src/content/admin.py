@@ -180,7 +180,7 @@ class SiteSettingsAdmin(SingletonAdmin):
         if db_field.name == "map_embed_url" and formfield is not None:
             formfield.widget = UnfoldAdminTextareaWidget(
                 attrs={
-                    "rows": 6,
+                    "rows": 3,
                     "placeholder": (
                         "Сюди вставити, наприклад:\n"
                         "<iframe src=\"https://www.google.com/maps/embed?pb=...\" "
