@@ -112,6 +112,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 14
 
+# Tag Assistant / Clarity need window.opener; default same-origin blocks it.
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": ("'self'",),
@@ -127,6 +130,7 @@ CONTENT_SECURITY_POLICY = {
             "https://www.googleadservices.com",
             "https://www.google.com",
             "https://googleads.g.doubleclick.net",
+            "https://*.clarity.ms",
         ),
         "style-src": (
             "'self'",
@@ -157,6 +161,8 @@ CONTENT_SECURITY_POLICY = {
             "https://www.googleadservices.com",
             "https://pagead2.googlesyndication.com",
             "https://*.merchant-center-analytics.goog",
+            "https://*.clarity.ms",
+            "https://c.bing.com",
         ),
         "frame-src": (
             "'self'",

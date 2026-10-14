@@ -1,4 +1,4 @@
-"""CSP header on the home page (GTM / GA4 / Ads allowlist)."""
+"""CSP / COOP headers on the home page; legacy /contacts/ redirect."""
 
 from django.test import TestCase
 from django.urls import reverse
@@ -35,6 +35,8 @@ class HomePageCSPTests(TestCase):
             "https://*.g.doubleclick.net",
             "https://www.googleadservices.com",
             "https://pagead2.googlesyndication.com",
+            "https://*.clarity.ms",
+            "https://c.bing.com",
         ):
             self.assertIn(host, connect)
 
@@ -44,6 +46,7 @@ class HomePageCSPTests(TestCase):
             f"script-src missing nonce: {script}",
         )
         self.assertIn("https://www.googletagmanager.com", script)
+        self.assertIn("https://*.clarity.ms", script)
         self.assertNotIn("https://ad.doubleclick.net", script)
         self.assertNotIn("ad.doubleclick.net", script)
 
@@ -60,3 +63,19 @@ class HomePageCSPTests(TestCase):
                 )
             for token in tokens:
                 self.assertNotEqual(token, "*", f"{name} must not contain bare *")
+
+    def test_home_coop_allows_popups(self):
+        response = self.client.get(reverse("core:home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.get("Cross-Origin-Opener-Policy"),
+            "same-origin-allow-popups",
+        )
+
+
+class ContactsLegacyRedirectTests(TestCase):
+    def test_contacts_redirects_to_kontakty(self):
+        response = self.client.get("/contacts/")
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.url, reverse("content:contacts"))
+        self.assertEqual(response.url, "/kontakty/")
