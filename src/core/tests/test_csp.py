@@ -64,13 +64,10 @@ class HomePageCSPTests(TestCase):
             for token in tokens:
                 self.assertNotEqual(token, "*", f"{name} must not contain bare *")
 
-    def test_home_coop_allows_popups(self):
+    def test_home_has_no_coop_header(self):
         response = self.client.get(reverse("core:home"))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.get("Cross-Origin-Opener-Policy"),
-            "same-origin-allow-popups",
-        )
+        self.assertNotIn("Cross-Origin-Opener-Policy", response.headers)
 
 
 class ContactsLegacyRedirectTests(TestCase):

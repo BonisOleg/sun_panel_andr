@@ -112,8 +112,8 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 14
 
-# Tag Assistant / Clarity need window.opener; default same-origin blocks it.
-SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+# No COOP header: Tag Assistant / Clarity need window.opener (default same-origin breaks it).
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
