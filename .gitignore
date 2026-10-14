@@ -23,3 +23,8 @@ deploy/data/*.tar.gz
 /ChatGPT*.png
 /*.docx
 /*.pdf
+
+# Local DB dumps / media archives — never commit
+/*.sql
+/*.sql.gz
+/*.tar.gz
