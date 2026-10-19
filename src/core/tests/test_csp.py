@@ -47,12 +47,22 @@ class HomePageCSPTests(TestCase):
         )
         self.assertIn("https://www.googletagmanager.com", script)
         self.assertIn("https://*.clarity.ms", script)
-        self.assertNotIn("https://ad.doubleclick.net", script)
-        self.assertNotIn("ad.doubleclick.net", script)
+        for host in (
+            "https://*.googletagmanager.com",
+            "https://*.google-analytics.com",
+            "https://*.googleadservices.com",
+            "https://*.doubleclick.net",
+            "https://*.google.com",
+        ):
+            self.assertIn(host, script)
+            self.assertIn(host, connect)
+        self.assertNotIn("'unsafe-inline'", script)
+        self.assertNotIn("'unsafe-eval'", script)
 
         frame = directives.get("frame-src", [])
         self.assertIn("https://www.googletagmanager.com", frame)
         self.assertIn("https://td.doubleclick.net", frame)
+        self.assertIn("https://*.doubleclick.net", frame)
 
         for name, tokens in directives.items():
             if name != "style-src-attr":
