@@ -132,28 +132,39 @@
   gap: var(--space-2);
 }
 
+/* Два ряди від 768px: юр. навігація, потім копірайт ліворуч і кредит праворуч.
+   768–1023: пункти юр. рядка можуть переноситись. Від 1024 — один рядок без переносу. */
 .site-footer__bottom {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  column-gap: var(--space-5);
-  row-gap: var(--space-3);
+  gap: var(--space-3);
   margin-top: var(--space-6);
   padding-top: var(--space-4);
   border-top: 1px solid rgb(246 242 247 / 0.18);
   font-size: var(--fs-sm);
   color: rgb(246 242 247 / 0.7);
   text-align: center;
+  min-width: 0;
 }
 
 .site-footer__legal {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2) var(--space-4);
+  align-items: center;
   justify-content: center;
+  gap: var(--space-3);
   order: -1;
-  flex: 1 0 100%;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.site-footer__legal a,
+.site-footer__cookie-btn {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .site-footer__legal a {
@@ -167,37 +178,55 @@
 
 .site-footer__copy,
 .site-footer__credit {
-  flex: 0 1 auto;
-}
-
-@media (min-width: 1124px) {
-  .site-footer__bottom {
-    flex-wrap: nowrap;
-    justify-content: space-between;
-    text-align: left;
-  }
-
-  .site-footer__legal {
-    order: 0;
-    flex: 1 1 auto;
-    padding-inline: var(--space-4);
-  }
-
-  .site-footer__copy,
-  .site-footer__credit {
-    flex: 0 0 auto;
-  }
-}
-
-.site-footer__copy {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin: 0;
 }
 
 .site-footer__credit {
-  margin: 0;
   font-size: var(--fs-base);
   line-height: 1.4;
   color: rgb(246 242 247 / 0.78);
+}
+
+@media (min-width: 768px) {
+  .site-footer__bottom {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: var(--space-4);
+    row-gap: var(--space-3);
+  }
+
+  .site-footer__legal {
+    flex: 1 0 100%;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  .site-footer__copy,
+  .site-footer__credit {
+    width: auto;
+    max-width: none;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .site-footer__copy {
+    text-align: left;
+  }
+
+  .site-footer__credit {
+    text-align: right;
+  }
+}
+
+@media (min-width: 1024px) {
+  .site-footer__legal {
+    flex-wrap: nowrap;
+    column-gap: var(--space-3);
+  }
 }
 
 /* PrometeyLabs brand: orange #E65100 / purple #7B2CBF */
