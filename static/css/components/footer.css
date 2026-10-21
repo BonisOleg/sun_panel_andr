@@ -132,8 +132,9 @@
   gap: var(--space-2);
 }
 
-/* Два ряди від 768px: юр. навігація, потім копірайт ліворуч і кредит праворуч.
-   768–1023: пункти юр. рядка можуть переноситись. Від 1024 — один рядок без переносу. */
+/* Нижче 768: колонка по центру, юр. посилання першим рядком (пункти можуть переноситись).
+   768–1023: юр. рядок на всю ширину, під ним копірайт ліворуч і кредит праворуч.
+   Від 1024: один ряд — копірайт | юр. по центру | кредит, без переносу. */
 .site-footer__bottom {
   display: flex;
   flex-direction: column;
@@ -223,9 +224,58 @@
 }
 
 @media (min-width: 1024px) {
-  .site-footer__legal {
+  .site-footer__bottom {
     flex-wrap: nowrap;
-    column-gap: var(--space-3);
+    align-items: center;
+    justify-content: space-between;
+    column-gap: var(--space-4);
+  }
+
+  .site-footer__copy,
+  .site-footer__legal,
+  .site-footer__credit {
+    order: 0;
+  }
+
+  .site-footer__copy,
+  .site-footer__credit {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: none;
+  }
+
+  .site-footer__legal {
+    flex: 1 1 auto;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    gap: var(--space-3);
+  }
+
+  /* 0.8125rem не вміщує 5 пунктів у контент ~992px; 0.6875rem лишає запас ~26px */
+  .site-footer__legal a,
+  .site-footer__legal .site-footer__cookie-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 0.6875rem;
+  }
+
+  .site-footer__credit {
+    font-size: var(--fs-sm);
+  }
+}
+
+@media (min-width: 1280px) {
+  .site-footer__legal {
+    gap: var(--space-4);
+  }
+
+  .site-footer__legal a,
+  .site-footer__legal .site-footer__cookie-btn {
+    font-size: 0.875rem;
   }
 }
 
