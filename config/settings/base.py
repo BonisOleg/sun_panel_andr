@@ -118,7 +118,7 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 CONTENT_SECURITY_POLICY = {
     "DIRECTIVES": {
         "default-src": ("'self'",),
-        # NONCE — inline GTM bootstrap; googletagmanager/analytics — контейнер і теги
+        # NONCE — критичний CSS; хости GTM/Ads/Clarity — скрипт після згоди (consent.js)
         "script-src": (
             "'self'",
             NONCE,

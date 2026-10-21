@@ -1,0 +1,290 @@
+/* Банер згоди на cookie — компактна нижня панель, iOS safe area */
+
+.cookie-banner {
+  position: fixed;
+  z-index: 200;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-height: 46vh;
+  max-height: 46dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding:
+    var(--space-2)
+    max(var(--space-3), var(--safe-left))
+    calc(var(--space-2) + var(--safe-bottom))
+    max(var(--space-3), var(--safe-right));
+  background: var(--c-bg-elevated);
+  color: var(--c-ink);
+  border-top: 1px solid var(--c-line);
+  box-shadow: var(--shadow-lift);
+}
+
+.cookie-banner[hidden] {
+  display: none;
+}
+
+/* Щоб фіксована панель не перекривала низ сторінки, поки банер відкритий. */
+body:has(#cookie-banner:not([hidden])) {
+  padding-bottom: calc(13rem + var(--safe-bottom));
+}
+
+body:has(#cookie-banner:not([hidden]) .cookie-banner__title) {
+  padding-bottom: calc(15.5rem + var(--safe-bottom));
+}
+
+.cookie-banner__panel {
+  width: min(100%, var(--container));
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+
+.cookie-banner__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
+  min-width: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.cookie-banner__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--c-ink);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.cookie-banner__text {
+  margin: 0;
+  font-size: var(--fs-xs);
+  line-height: 1.35;
+  color: var(--c-muted);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.cookie-banner__text p,
+.cookie-banner__text ul,
+.cookie-banner__text ol {
+  margin: 0;
+}
+
+.cookie-banner__text p + p,
+.cookie-banner__text ul,
+.cookie-banner__text ol {
+  margin-top: 0.35rem;
+}
+
+.cookie-banner__text ul,
+.cookie-banner__text ol {
+  padding-left: 1.15rem;
+}
+
+.cookie-banner__text a {
+  color: var(--c-brand);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  overflow-wrap: anywhere;
+}
+
+.cookie-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cookie-banner__btn {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 1 1 7.5rem;
+  min-height: 2.75rem;
+  margin: 0;
+  padding: 0.4rem 0.65rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cookie-banner__btn--primary {
+  background: var(--c-btn);
+  color: var(--c-accent-ink);
+}
+
+.cookie-banner__btn--primary:hover {
+  background: var(--c-btn-hover);
+}
+
+.cookie-banner__btn--ghost {
+  border-color: var(--c-line);
+  color: var(--c-ink);
+  background: var(--c-bg);
+}
+
+.cookie-banner__btn--ghost:hover {
+  border-color: var(--c-brand);
+  color: var(--c-brand);
+}
+
+.cookie-banner__link {
+  flex: 1 0 100%;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--c-brand);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cookie-banner__btn:focus-visible,
+.cookie-banner__link:focus-visible {
+  outline: 2px solid var(--c-brand);
+  outline-offset: 3px;
+}
+
+.site-footer__cookie-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  font-size: var(--fs-sm);
+  line-height: inherit;
+  color: rgb(246 242 247 / 0.78);
+  text-align: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.site-footer__cookie-btn:hover {
+  color: var(--c-accent-yellow);
+}
+
+.site-footer__cookie-btn:focus-visible {
+  outline: 2px solid var(--c-accent-yellow);
+  outline-offset: 3px;
+}
+
+@media (max-width: 359px) {
+  .cookie-banner {
+    padding:
+      var(--space-2)
+      max(var(--space-2), var(--safe-left))
+      calc(var(--space-2) + var(--safe-bottom))
+      max(var(--space-2), var(--safe-right));
+  }
+
+  .cookie-banner__text,
+  .cookie-banner__btn,
+  .cookie-banner__link {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 768px) {
+  body:has(#cookie-banner:not([hidden])) {
+    padding-bottom: calc(7.5rem + var(--safe-bottom));
+  }
+
+  body:has(#cookie-banner:not([hidden]) .cookie-banner__title) {
+    padding-bottom: calc(9rem + var(--safe-bottom));
+  }
+
+  .cookie-banner {
+    max-height: none;
+    overflow: visible;
+    padding-top: var(--space-3);
+    padding-bottom: calc(var(--space-3) + var(--safe-bottom));
+  }
+
+  .cookie-banner__panel {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .cookie-banner__copy {
+    flex: 1 1 auto;
+  }
+
+  .cookie-banner__title {
+    font-size: 1rem;
+  }
+
+  .cookie-banner__text {
+    font-size: var(--fs-sm);
+    line-height: var(--lh-body);
+  }
+
+  .cookie-banner__actions {
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+  }
+
+  .cookie-banner__btn {
+    flex: 0 0 auto;
+    min-height: var(--tap);
+    padding: 0.5rem 1rem;
+    font-size: var(--fs-sm);
+  }
+
+  .cookie-banner__link {
+    flex: 0 0 auto;
+    text-align: left;
+    font-size: var(--fs-sm);
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 1440px) {
+  body:has(#cookie-banner:not([hidden])) {
+    padding-bottom: calc(6.75rem + var(--safe-bottom));
+  }
+
+  body:has(#cookie-banner:not([hidden]) .cookie-banner__title) {
+    padding-bottom: calc(8rem + var(--safe-bottom));
+  }
+
+  .cookie-banner {
+    padding-top: var(--space-4);
+    padding-bottom: calc(var(--space-4) + var(--safe-bottom));
+  }
+
+  .cookie-banner__panel {
+    gap: var(--space-5);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cookie-banner__btn,
+  .cookie-banner__link,
+  .site-footer__cookie-btn {
+    transition: none;
+  }
+}

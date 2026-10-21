@@ -1,0 +1,34 @@
+{% load richtext_tags %}
+<div
+  id="cookie-banner"
+  class="cookie-banner"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="cookie-banner-title"
+  hidden
+>
+  <div class="cookie-banner__panel">
+    <div class="cookie-banner__copy">
+      {% if site_settings.cookie_banner_title %}
+        <p id="cookie-banner-title" class="cookie-banner__title">{{ site_settings.cookie_banner_title }}</p>
+      {% endif %}
+      <div
+        class="cookie-banner__text"
+        {% if not site_settings.cookie_banner_title %}id="cookie-banner-title"{% endif %}
+      >
+        {{ site_settings.cookie_banner_text|default:"Необхідні cookie завжди увімкнені — для кошика, форм і захисту сайту. Аналітика та реклама (Google Ads, Microsoft Clarity через Google Tag Manager) вмикаються лише після «Прийняти всі»."|richtext }}
+      </div>
+    </div>
+    <div class="cookie-banner__actions">
+      <button type="button" class="cookie-banner__btn cookie-banner__btn--primary" data-cookie-accept>
+        {{ site_settings.cookie_accept_label|default:"Прийняти всі" }}
+      </button>
+      <button type="button" class="cookie-banner__btn cookie-banner__btn--ghost" data-cookie-necessary>
+        {{ site_settings.cookie_necessary_label|default:"Лише необхідні" }}
+      </button>
+      <a class="cookie-banner__link" href="{% url 'content:page' 'polityka-konfidentsiynosti' %}">
+        {{ site_settings.cookie_policy_link_label|default:"Політика конфіденційності" }}
+      </a>
+    </div>
+  </div>
+</div>

@@ -13,12 +13,8 @@
   <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon/favicon-16x16.png' %}">
   <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
   <link rel="manifest" href="{% url 'seo:webmanifest' %}">
-  {# Google Tag Manager — ID від відділу реклами #}
-  <script nonce="{{ request.csp_nonce }}">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-MDSC9NQL');</script>
+  {# Consent Mode + GTM лише після «Прийняти всі». Без defer/async — виконується до інших скриптів. #}
+  <script src="{% static 'js/consent.js' %}?v={{ static_version }}"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
@@ -27,7 +23,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     {% inline_static_css "css/tokens.css" "css/reset.css" "css/layout.css" "css/components.css" %}
     {% block critical_css %}{% endblock %}
   </style>
-  {% async_css "css/components/custom-dropdown.css" "css/components/richtext.css" "css/components/header_search.css" "css/components/footer.css" %}
+  {% async_css "css/components/custom-dropdown.css" "css/components/richtext.css" "css/components/header_search.css" "css/components/footer.css" "css/components/cookie-banner.css" %}
   <script src="{% static 'js/css-async.js' %}?v={{ static_version }}" defer></script>
   {# Без inline <style> від htmx — стилі індикаторів у components.css (CSP style-src) #}
   <meta name="htmx-config" content='{"includeIndicatorStyles": false}'>
@@ -41,15 +37,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   {% block extra_head %}{% endblock %}
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-  <!-- Google Tag Manager (noscript) -->
-  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MDSC9NQL"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <a class="visually-hidden" href="#main">Перейти до вмісту</a>
   {% include "partials/header.html" %}
   <main class="site-main" id="main">
     {% block content %}{% endblock %}
   </main>
   {% include "partials/footer.html" %}
+  {% include "partials/cookie_banner.html" %}
   {% block extra_js %}{% endblock %}
 </body>
 </html>

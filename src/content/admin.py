@@ -166,6 +166,17 @@ class SiteSettingsAdmin(SingletonAdmin):
                 },
             ),
             (
+                "Cookie-банер",
+                {
+                    "description": "Тексти банера згоди та кнопка в підвалі. HTML у тексті очищується при збереженні.",
+                    "fields": (
+                        "cookie_banner_title", "cookie_banner_text",
+                        "cookie_accept_label", "cookie_necessary_label",
+                        "cookie_policy_link_label", "cookie_settings_link_label",
+                    ),
+                },
+            ),
+            (
                 "Аналітика та SEO",
                 {
                     "fields": ("gtm_container_id", "ga4_measurement_id", "robots_txt"),
@@ -188,8 +199,9 @@ class SiteSettingsAdmin(SingletonAdmin):
                     ),
                 }
             )
-        if db_field.name in {"address", "work_schedule"} and formfield is not None:
-            formfield.widget.attrs.setdefault("rows", 3)
+        rows_fields = {"address": 3, "work_schedule": 3, "cookie_banner_text": 4}
+        if db_field.name in rows_fields and formfield is not None:
+            formfield.widget.attrs.setdefault("rows", rows_fields[db_field.name])
         return formfield
 
 

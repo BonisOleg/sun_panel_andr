@@ -32,6 +32,21 @@ DEFAULT_LOGO_HELP = (
     "(галочка «Повернути оригінальний логотип») і збережіть."
 )
 
+COOKIE_BANNER_TEXT_DEFAULT = (
+    "Необхідні cookie завжди увімкнені — для кошика, форм і захисту сайту. "
+    "Аналітика та реклама (Google Ads, Microsoft Clarity через Google Tag Manager) "
+    "вмикаються лише після «Прийняти всі»."
+)
+COOKIE_ACCEPT_LABEL_DEFAULT = "Прийняти всі"
+COOKIE_NECESSARY_LABEL_DEFAULT = "Лише необхідні"
+COOKIE_POLICY_LINK_LABEL_DEFAULT = "Політика конфіденційності"
+COOKIE_SETTINGS_LINK_LABEL_DEFAULT = "Налаштування cookies"
+
+
+def _cookie_plain(value: str) -> str:
+    """Короткий підпис без HTML. Вміст script/style вирізається повністю."""
+    return strip_tags(sanitize_richtext(value or "")).strip()
+
 
 class SiteSettings(TimeStampedModel):
     site_name = models.CharField(max_length=120, default="Soliron")
@@ -162,6 +177,54 @@ class SiteSettings(TimeStampedModel):
         default="",
         help_text="Листи про замовлення та ЗЗ (Resend). Fallback: env NOTIFY_EMAIL. Telegram — TELEGRAM_* у .env.",
     )
+    cookie_banner_title = models.CharField(
+        "Заголовок cookie-банера",
+        max_length=160,
+        blank=True,
+        default="",
+        help_text=(
+            "Необовʼязковий короткий заголовок над текстом банера. "
+            "Без HTML. Якщо поле порожнє, на сайті лишається лише текст."
+        ),
+    )
+    cookie_banner_text = models.TextField(
+        "Текст cookie-банера",
+        blank=True,
+        default=COOKIE_BANNER_TEXT_DEFAULT,
+        help_text=(
+            "Коротке пояснення в банері. Звичайний текст або обмежений HTML: "
+            "абзац, посилання, виділення, список. Скрипти, стилі та iframe "
+            "вирізаються під час збереження. Порожнє поле повертає стандартний текст."
+        ),
+    )
+    cookie_accept_label = models.CharField(
+        "Кнопка «Прийняти всі»",
+        max_length=120,
+        blank=True,
+        default=COOKIE_ACCEPT_LABEL_DEFAULT,
+        help_text="Підпис кнопки, яка вмикає аналітику та рекламу (Google Ads, Microsoft Clarity).",
+    )
+    cookie_necessary_label = models.CharField(
+        "Кнопка «Лише необхідні»",
+        max_length=120,
+        blank=True,
+        default=COOKIE_NECESSARY_LABEL_DEFAULT,
+        help_text="Підпис кнопки, яка лишає лише суворо необхідні cookie і не вантажить аналітику.",
+    )
+    cookie_policy_link_label = models.CharField(
+        "Посилання на політику",
+        max_length=120,
+        blank=True,
+        default=COOKIE_POLICY_LINK_LABEL_DEFAULT,
+        help_text="Текст посилання в банері на сторінку політики конфіденційності.",
+    )
+    cookie_settings_link_label = models.CharField(
+        "Кнопка «Налаштування cookies»",
+        max_length=120,
+        blank=True,
+        default=COOKIE_SETTINGS_LINK_LABEL_DEFAULT,
+        help_text="Підпис кнопки в підвалі сайту, яка знову відкриває банер згоди.",
+    )
     gtm_container_id = models.CharField(max_length=32, blank=True, default="")
     ga4_measurement_id = models.CharField(max_length=32, blank=True, default="")
     robots_txt = models.TextField(blank=True, default="")
@@ -179,6 +242,21 @@ class SiteSettings(TimeStampedModel):
         if self.address:
             self.address = strip_tags(self.address).strip()
         self.map_embed_url = normalize_map_embed(self.map_embed_url)
+        self.cookie_banner_title = _cookie_plain(self.cookie_banner_title)
+        banner_text = sanitize_richtext(self.cookie_banner_text or "")
+        self.cookie_banner_text = banner_text or COOKIE_BANNER_TEXT_DEFAULT
+        self.cookie_accept_label = (
+            _cookie_plain(self.cookie_accept_label) or COOKIE_ACCEPT_LABEL_DEFAULT
+        )
+        self.cookie_necessary_label = (
+            _cookie_plain(self.cookie_necessary_label) or COOKIE_NECESSARY_LABEL_DEFAULT
+        )
+        self.cookie_policy_link_label = (
+            _cookie_plain(self.cookie_policy_link_label) or COOKIE_POLICY_LINK_LABEL_DEFAULT
+        )
+        self.cookie_settings_link_label = (
+            _cookie_plain(self.cookie_settings_link_label) or COOKIE_SETTINGS_LINK_LABEL_DEFAULT
+        )
         super().save(*args, **kwargs)
 
     @classmethod
