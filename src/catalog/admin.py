@@ -57,6 +57,7 @@ class CategoryAdmin(TinyMCEAdminMixin, ModelAdmin):
             },
         ),
         ("Картка каталогу", {"fields": ("card_badge_text", "card_badge_style")}),
+        ("Google Merchant", {"fields": ("merchant_label",)}),
         ("Статус", {"fields": ("is_active", "sort_order")}),
         ("SEO", {"fields": ("seo_title", "seo_description", "seo_keywords"), "classes": ("collapse",)}),
     )
@@ -123,6 +124,7 @@ class ProductAdmin(TinyMCEAdminMixin, ModelAdmin):
     fieldsets = (
         (None, {"fields": ("category", "name", "slug", "description", "sku")}),
         ("Ціна та наявність", {"fields": ("price_uah", "availability", "availability_label")}),
+        ("Google Merchant", {"fields": ("brand", "feed_title")}),
         (
             "Габарити (Delivery)",
             {

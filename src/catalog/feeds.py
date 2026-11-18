@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.views import View
 
+from src.catalog import merchant
 from src.catalog.models import Product, ProductImage
 from src.content.models import SiteSettings
 from src.seo.utils import absolute_url, meta_text
@@ -16,15 +17,8 @@ from src.seo.utils import absolute_url, meta_text
 _G_NS = "http://base.google.com/ns/1.0"
 _G = f"{{{_G_NS}}}"
 
-_AVAIL = {
-    Product.Availability.IN_STOCK: "in_stock",
-    Product.Availability.ON_ORDER: "backorder",
-    Product.Availability.OUT_OF_STOCK: "out_of_stock",
-    Product.Availability.CALL: "in_stock",
-}
-
-
 def merchant_products_qs():
+    """Усі опубліковані товари з ціною — без ліміту/пагінації."""
     images = Prefetch(
         "images",
         queryset=ProductImage.objects.order_by("-is_main", "sort_order", "id"),
@@ -75,8 +69,12 @@ class GoogleMerchantFeedView(View):
 
             item = ET.SubElement(channel, "item")
             sku = (product.sku or "").strip()
+            category = product.category if product.category_id else None
+            label0 = merchant.category_label(category)
+            item_brand, _src = merchant.product_brand(product, default=brand)
+            title, _tsrc = merchant.feed_title(product, item_brand, label0)
             _g_el(item, "id", sku or str(product.pk))
-            _g_el(item, "title", meta_text(product.name, limit=150))
+            _g_el(item, "title", title)
             desc = meta_text(product.description or product.name, limit=5000)
             _g_el(item, "description", desc or product.name)
             _g_el(
@@ -91,13 +89,22 @@ class GoogleMerchantFeedView(View):
             _g_el(
                 item,
                 "availability",
-                _AVAIL.get(product.availability, "in_stock"),
+                merchant.AVAILABILITY.get(product.availability, "in_stock"),
             )
-            _g_el(item, "price", f"{product.price_uah:.2f} UAH")
+            if product.availability == Product.Availability.ON_ORDER:
+                # Google вимагає availability_date для preorder
+                _g_el(item, "availability_date", merchant.preorder_date())
+            _g_el(item, "price", merchant.format_price(product.price_uah))
             _g_el(item, "condition", "new")
-            _g_el(item, "brand", brand)
-            if product.category_id and product.category:
-                _g_el(item, "product_type", product.category.name)
+            if item_brand:
+                _g_el(item, "brand", item_brand)
+            if category is not None:
+                _g_el(item, "product_type", category.name)
+            if label0:
+                _g_el(item, "custom_label_0", label0)
+            _g_el(item, "custom_label_1", merchant.price_label(product.price_uah))
+            if item_brand:
+                _g_el(item, "custom_label_2", item_brand)
 
         xml_bytes = ET.tostring(rss, encoding="utf-8", xml_declaration=True)
         return HttpResponse(xml_bytes, content_type="application/xml; charset=utf-8")

@@ -46,6 +46,13 @@ class Category(TimeStampedModel, SeoFieldsMixin):
     )
     is_active = models.BooleanField("Активна", default=True)
     sort_order = models.PositiveIntegerField("Порядок", default=0)
+    merchant_label = models.CharField(
+        "Merchant: custom_label_0",
+        max_length=100,
+        blank=True,
+        default="",
+        help_text="Мітка групи для Google Ads (напр. Panels, Zinc_Mounts, Aluminum_System, Cables).",
+    )
 
     class Meta:
         db_table = "catalog_category"
@@ -135,6 +142,22 @@ class Product(TimeStampedModel, SeoFieldsMixin):
         blank=True,
     )
     sku = models.CharField("SKU", max_length=64)
+    brand = models.CharField(
+        "Бренд",
+        max_length=100,
+        blank=True,
+        default="",
+        help_text="Для Google Merchant (g:brand, custom_label_2). Порожньо = визначити з назви "
+        "(Longi, Jinko, Leapton, KBE…), інакше назва сайту.",
+    )
+    feed_title = models.CharField(
+        "Заголовок для Google Merchant",
+        max_length=150,
+        blank=True,
+        default="",
+        help_text="Необовʼязково. Формула: Тип товару + Бренд + Модель/характеристика, ≤150 символів. "
+        "Порожньо = згенерувати автоматично з назви.",
+    )
     weight_kg = models.DecimalField(
         "Вага, кг",
         max_digits=8,
