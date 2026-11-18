@@ -139,6 +139,12 @@ class Order(TimeStampedModel):
     )
     email_sent_at = models.DateTimeField(null=True, blank=True)
     telegram_sent_at = models.DateTimeField(null=True, blank=True)
+    analytics_sent_at = models.DateTimeField(
+        "GTM purchase відправлено",
+        null=True,
+        blank=True,
+        help_text="Коли подію purchase віддано у dataLayer (одноразово на замовлення).",
+    )
 
     class Meta:
         db_table = "commerce_order"

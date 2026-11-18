@@ -1,3 +1,5 @@
 # Soliron — синк міст/складів Delivery + Нова Пошта (щодня о 03:00)
 # Формат: supercronic / стандартний cron (5 полів)
 0 3 * * * /app/deploy/sync_shipping.sh
+# Добити Telegram/Email, якщо фоновий потік web не встиг (рестарт контейнера)
+*/10 * * * * cd /app && python manage.py send_pending_notifications

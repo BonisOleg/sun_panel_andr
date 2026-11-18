@@ -6,6 +6,7 @@
 {% endblock %}
 {% block extra_head %}
 {% async_css "css/pages/commerce.css" %}
+{% if gtm_purchase %}{{ gtm_purchase|json_script:"gtm-purchase-data" }}{% endif %}
 {% endblock %}
 {% block content %}
 <div class="container section">

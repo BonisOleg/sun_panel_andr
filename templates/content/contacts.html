@@ -125,6 +125,7 @@
       <section class="contacts-card contacts-card--form" id="contact-form-wrap" aria-labelledby="contacts-form-title">
         {% if success %}
           {% include "content/partials/contact_thanks.html" %}
+          {% if gtm_lead_form_id %}<span data-gtm-lead="{{ gtm_lead_form_id }}" hidden></span>{% endif %}
         {% else %}
           {% include "content/partials/contact_form.html" %}
         {% endif %}

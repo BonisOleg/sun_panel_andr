@@ -132,6 +132,7 @@ CONTENT_SECURITY_POLICY = {
             "https://*.googleadservices.com",
             "https://www.google.com",
             "https://*.google.com",
+            "https://www.google.com.ua",
             "https://googleads.g.doubleclick.net",
             "https://*.doubleclick.net",
             "https://*.clarity.ms",
@@ -306,6 +307,9 @@ NOTIFY_EMAIL = config("NOTIFY_EMAIL", default="")
 TELEGRAM_BOT_TOKEN = config("TELEGRAM_BOT_TOKEN", default="")
 TELEGRAM_CHAT_ID = config("TELEGRAM_CHAT_ID", default="")
 TELEGRAM_API_TIMEOUT = config("TELEGRAM_API_TIMEOUT", default=5, cast=int)
+# Telegram/Email відправляються у фоновому потоці після commit (не блокують відповідь).
+NOTIFICATIONS_ASYNC = config("NOTIFICATIONS_ASYNC", default=True, cast=bool)
+NOTIFICATIONS_THREADS = config("NOTIFICATIONS_THREADS", default=2, cast=int)
 
 # Delivery Auto API v4 — публічні довідники без ключів; calc/ТТН потребують HMAC.
 DELIVERY_PUBLIC_KEY = config("DELIVERY_PUBLIC_KEY", default="")

@@ -10,7 +10,7 @@ from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from src.notifications.services import notify_lead
+from src.notifications.services import schedule_lead_notifications
 
 from .models import BlogPost, ContactLead, ContentPage, HomeAdvantage, HomePage
 
@@ -156,6 +156,7 @@ def create_contact_lead(*, name: str, phone: str, message: str, email: str = "",
 def create_contact_lead_and_notify(
     *, name: str, phone: str, message: str, email: str = "", source_url: str = ""
 ) -> ContactLead:
+    """Зберегти лід і поставити Telegram/Email у фон (відповідь — миттєво)."""
     lead = create_contact_lead(
         name=name,
         phone=phone,
@@ -163,15 +164,5 @@ def create_contact_lead_and_notify(
         email=email,
         source_url=source_url,
     )
-    channels = notify_lead(lead)
-    update_fields: list[str] = []
-    now = timezone.now()
-    if channels.get("email"):
-        lead.email_sent_at = now
-        update_fields.append("email_sent_at")
-    if channels.get("telegram"):
-        lead.telegram_sent_at = now
-        update_fields.append("telegram_sent_at")
-    if update_fields:
-        lead.save(update_fields=update_fields)
+    schedule_lead_notifications(lead)
     return lead

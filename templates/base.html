@@ -35,6 +35,8 @@
   <script src="{% static 'js/catalog-ui.js' %}?v={{ static_version }}" defer></script>
   <script src="{% static 'js/cart-feedback.js' %}?v={{ static_version }}" defer></script>
   {% block extra_head %}{% endblock %}
+  {# GTM dataLayer-події (purchase/generate_lead). Після extra_head і без defer: JSON purchase вже в DOM. #}
+  <script src="{% static 'js/gtm-events.js' %}?v={{ static_version }}"></script>
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
   <a class="visually-hidden" href="#main">Перейти до вмісту</a>

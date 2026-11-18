@@ -459,3 +459,33 @@
 .cart-item__remove-btn:active {
   transform: scale(0.96);
 }
+
+/* Оформлення: стан «відправляється» після першого кліку (checkout-submit.js) */
+.checkout-card[aria-busy="true"] .btn[disabled] {
+  cursor: progress;
+  opacity: 0.75;
+}
+.btn--confirm .btn__spinner {
+  display: none;
+  width: 1em;
+  height: 1em;
+  margin-right: 0.5em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -0.15em;
+  animation: checkout-spin 0.7s linear infinite;
+}
+.btn--confirm.is-loading .btn__spinner {
+  display: inline-block;
+}
+@keyframes checkout-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn--confirm .btn__spinner {
+    animation-duration: 2s;
+  }
+}

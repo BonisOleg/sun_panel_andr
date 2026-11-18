@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views import View
 
-from . import services
+from . import analytics, services
 from .models import Order
 from .selectors import cart_items_count
 
@@ -98,17 +98,29 @@ class CartRemoveView(View):
 
 
 class OrderThanksView(View):
-    """Подяка після замовлення: номер лише з сесії, без pop — F5 стабільний."""
+    """Подяка після замовлення: номер лише з сесії, без pop — F5 стабільний.
+
+    GTM purchase рендериться в <head> рівно один раз на замовлення
+    (Order.analytics_sent_at); F5 / повторний сабміт подію не дублюють.
+    """
 
     def get(self, request):
         number = request.session.get("order_thanks")
         if not number:
             return redirect("catalog:list")
-        return render(
+        gtm_purchase = None
+        order = (
+            Order.objects.filter(number=number).prefetch_related("items").first()
+        )
+        if order is not None and analytics.claim_purchase_event(order):
+            gtm_purchase = analytics.purchase_payload(order)
+        response = render(
             request,
             "commerce/thanks.html",
-            {"order_number": number},
+            {"order_number": number, "gtm_purchase": gtm_purchase},
         )
+        response["Cache-Control"] = "no-store"
+        return response
 
 
 class CheckoutView(View):
@@ -143,6 +155,20 @@ class CheckoutView(View):
                 services.save_checkout_draft(request, draft)
                 return redirect("commerce:checkout")
 
+            if action == "confirm" and (
+                step == 3 or services.recent_session_order(request) is not None
+            ):
+                # step != 3 → чернетку вже спожив перший сабміт (подвійний клік):
+                # place_order_and_notify поверне вже створене замовлення.
+                if step == 3:
+                    cleaned = services.validate_step3(request.POST)
+                    draft.update(cleaned)
+                    services.save_checkout_draft(request, draft)
+                order, _created = services.place_order_and_notify(request)
+                request.session["order_thanks"] = order.number
+                request.session.modified = True
+                return redirect("commerce:thanks")
+
             if step == 1:
                 cleaned = services.validate_step1(request.POST)
                 draft.update(cleaned)
@@ -157,14 +183,6 @@ class CheckoutView(View):
                 services.save_checkout_draft(request, draft)
                 return redirect("commerce:checkout")
 
-            if step == 3 and action == "confirm":
-                cleaned = services.validate_step3(request.POST)
-                draft.update(cleaned)
-                services.save_checkout_draft(request, draft)
-                order = services.place_order_and_notify(request)
-                request.session["order_thanks"] = order.number
-                request.session.modified = True
-                return redirect("commerce:thanks")
         except services.CheckoutError as exc:
             payload = exc.args[0] if exc.args else {"__all__": str(exc)}
             errors = payload if isinstance(payload, dict) else {"__all__": str(payload)}

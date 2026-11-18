@@ -12,6 +12,7 @@
 <script src="{% static 'js/checkout_contacts.js' %}" defer></script>
 <script src="{% static 'js/checkout_np.js' %}" defer></script>
 <script src="{% static 'js/checkout_delivery.js' %}" defer></script>
+<script src="{% static 'js/checkout-submit.js' %}?v={{ static_version }}" defer></script>
 {% endblock %}
 {% block content %}
 <div class="container section--tight checkout-page">
@@ -47,7 +48,7 @@
     {% include "commerce/partials/cart_table.html" %}
   </aside>
 
-  <form method="post" class="checkout-card surface" novalidate>
+  <form method="post" class="checkout-card surface" novalidate data-checkout-form>
     {% csrf_token %}
 
     {% if step == 1 %}
@@ -354,7 +355,8 @@
 
       <div class="checkout-nav">
         <button class="btn btn--ghost" type="submit" name="action" value="back">← Назад</button>
-        <button class="btn" type="submit" name="action" value="confirm">
+        <button class="btn btn--confirm" type="submit" name="action" value="confirm" data-loading-text="Оформлюємо…">
+          <span class="btn__spinner" aria-hidden="true"></span>
           <span class="btn__label">Підтвердити замовлення</span>
         </button>
       </div>

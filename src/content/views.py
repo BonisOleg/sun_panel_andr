@@ -1,5 +1,7 @@
 """content thin views."""
 
+import json
+
 from django.shortcuts import render
 from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
@@ -8,6 +10,8 @@ from src.catalog import selectors as catalog_selectors
 from src.catalog.models import Category
 
 from . import services
+
+LEAD_FORM_ID = "contact_form"
 
 
 def _htmx(request) -> bool:
@@ -109,9 +113,16 @@ class ContactsView(View):
                 return render(request, "content/partials/contact_form.html", ctx, status=400)
             return render(request, self.template_name, ctx, status=400)
 
+        # GTM generate_lead — лише після успішного збереження ліда на сервері.
         if _htmx(request):
-            return render(request, "content/partials/contact_thanks.html")
-        return render(request, self.template_name, {"success": True, "errors": {}, "form": {}})
+            response = render(request, "content/partials/contact_thanks.html")
+            response["HX-Trigger"] = json.dumps({"solironLead": {"form_id": LEAD_FORM_ID}})
+            return response
+        return render(
+            request,
+            self.template_name,
+            {"success": True, "errors": {}, "form": {}, "gtm_lead_form_id": LEAD_FORM_ID},
+        )
 
 
 class ContentPageDetailView(DetailView):

@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 import re
+from datetime import timedelta
 from decimal import Decimal
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Prefetch
 from django.utils import timezone
 
 from src.catalog.models import Product, ProductImage
-from src.notifications.services import notify_order
+from src.notifications.services import schedule_order_notifications
 
 from .models import Cart, CartItem, Order, OrderItem
 
@@ -292,17 +293,67 @@ def remove_item(request, *, item_id: int) -> Cart:
     return cart
 
 
+RECENT_ORDER_WINDOW = timedelta(minutes=15)
+_ORDER_NUMBER_RETRIES = 5
+
+
+def recent_session_order(request) -> Order | None:
+    """Останнє замовлення цієї сесії за 15 хв (захист від повторного «Підтвердити»)."""
+    session_key = request.session.session_key
+    if not session_key:
+        return None
+    return (
+        Order.objects.filter(
+            cart__session_key=session_key,
+            cart__status=Cart.Status.CONVERTED,
+            created_at__gte=timezone.now() - RECENT_ORDER_WINDOW,
+        )
+        .order_by("-created_at", "-id")
+        .first()
+    )
+
+
+def _create_order_with_unique_number(**fields) -> Order:
+    """Номер SL-YYYYMMDD-NNNN; при гонці двох покупців — повтор з наступним номером."""
+    last_exc: IntegrityError | None = None
+    for _ in range(_ORDER_NUMBER_RETRIES):
+        try:
+            with transaction.atomic():
+                return Order.objects.create(number=_next_order_number(), **fields)
+        except IntegrityError as exc:
+            last_exc = exc
+    raise last_exc  # type: ignore[misc]
+
+
 @transaction.atomic
-def place_order(request) -> Order:
+def place_order_idempotent(request) -> tuple[Order, bool]:
+    """Створити замовлення рівно один раз на кошик.
+
+    Повертає (order, created). Повторний/паралельний сабміт того ж кошика
+    (подвійний клік) повертає вже створене замовлення з created=False
+    замість помилки «Кошик порожній».
+    """
+    cart = get_or_create_cart(request)
+    # Блокуємо рядок кошика: другий паралельний запит чекає commit першого.
+    cart = Cart.objects.select_for_update().get(pk=cart.pk)
+    if cart.status != Cart.Status.ACTIVE:
+        existing = cart.orders.order_by("-id").first()
+        if existing is not None:
+            clear_checkout_draft(request)
+            return existing, False
+
+    items = list(cart_items_qs(cart))
+    if not items:
+        recent = recent_session_order(request)
+        if recent is not None:
+            clear_checkout_draft(request)
+            return recent, False
+        raise CheckoutError({"cart": "Кошик порожній"})
+
     draft = get_checkout_draft(request)
     step1 = validate_step1(draft)
     step2 = validate_step2(draft)
     step3 = validate_step3(draft)
-
-    cart = get_or_create_cart(request)
-    items = list(cart_items_qs(cart).select_for_update())
-    if not items:
-        raise CheckoutError({"cart": "Кошик порожній"})
 
     lines: list[dict] = []
     subtotal = Decimal("0.00")
@@ -328,8 +379,7 @@ def place_order(request) -> Order:
             }
         )
 
-    order = Order.objects.create(
-        number=_next_order_number(),
+    order = _create_order_with_unique_number(
         status=Order.Status.NEW,
         **step1,
         **step2,
@@ -344,21 +394,16 @@ def place_order(request) -> Order:
     cart.status = Cart.Status.CONVERTED
     cart.save(update_fields=["status", "updated_at"])
     clear_checkout_draft(request)
-    return order
+    return order, True
 
 
-def place_order_and_notify(request) -> Order:
-    """Commit order, then notify (Telegram/Email) outside the DB transaction."""
-    order = place_order(request)
-    channels = notify_order(order)
-    update_fields: list[str] = []
-    now = timezone.now()
-    if channels.get("email"):
-        order.email_sent_at = now
-        update_fields.append("email_sent_at")
-    if channels.get("telegram"):
-        order.telegram_sent_at = now
-        update_fields.append("telegram_sent_at")
-    if update_fields:
-        order.save(update_fields=update_fields)
-    return order
+def place_order(request) -> Order:
+    return place_order_idempotent(request)[0]
+
+
+def place_order_and_notify(request) -> tuple[Order, bool]:
+    """Commit order; Telegram/Email — у фоні після commit (не блокує редірект)."""
+    order, created = place_order_idempotent(request)
+    if created:
+        schedule_order_notifications(order)
+    return order, created
