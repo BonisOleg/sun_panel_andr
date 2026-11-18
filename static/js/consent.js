@@ -156,13 +156,14 @@
     var banner = bannerEl();
     if (!banner) return;
     banner.hidden = false;
-    var firstButton = banner.querySelector("[data-cookie-accept]");
-    if (!firstButton) return;
+    if (!banner.hasAttribute("tabindex")) {
+      banner.setAttribute("tabindex", "-1");
+    }
     window.requestAnimationFrame(function () {
       try {
-        firstButton.focus({ preventScroll: true });
+        banner.focus({ preventScroll: true });
       } catch (err) {
-        firstButton.focus();
+        banner.focus();
       }
     });
   }
@@ -187,15 +188,6 @@
     if (previous === GRANTED) {
       window.location.reload();
       return;
-    }
-    hideBanner();
-  }
-
-  function dismissForSession() {
-    try {
-      window.sessionStorage.setItem(DISMISS_KEY, "1");
-    } catch (err) {
-      /* ignore */
     }
     hideBanner();
   }
@@ -225,28 +217,15 @@
     }
   });
 
-  document.addEventListener("keydown", function (event) {
-    if (event.key !== "Escape") return;
-    var banner = bannerEl();
-    if (!banner || banner.hidden) return;
-    event.preventDefault();
-    dismissForSession();
-  });
-
   if (readStored() === GRANTED) {
     grantConsent();
     loadGtm();
   }
 
   function bootBanner() {
+    clearDismiss();
     if (readStored()) return;
-    var dismissed = false;
-    try {
-      dismissed = window.sessionStorage.getItem(DISMISS_KEY) === "1";
-    } catch (err) {
-      dismissed = false;
-    }
-    if (!dismissed) showBanner();
+    showBanner();
   }
 
   if (document.readyState === "loading") {
